@@ -11,11 +11,11 @@ let getMySql1mRows = []
 
 async function startMySqlConnection(){
     const connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: 'kamomillaStad1!',
-        database: 'examgroup'
-        // database: 'mondial'  // add local db in project later if possible
+        host: process.env.HOST,
+        user: process.env.USER,
+        password: process.env.PASSWORD,
+        database: process.env.DATABASE
+        // database: process.env.DATABASE  // add local db in project later if possible
     });
 
     connection.connect((error) => {

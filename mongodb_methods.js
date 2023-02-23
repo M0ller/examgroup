@@ -3,7 +3,7 @@ const dbName = 'examgroup'
 const collectionName = 'user'
 const uri = "mongodb://127.0.0.1";
 
-import { loopItterations , records10k, records100k, records200k, records500k, records1m } from "./settings.js";
+import { loopItterations, displayLogs, records10k, records100k, records200k, records500k, records1m } from "./settings.js";
 let loops = loopItterations
 
 let getMongoDb10kRows = []
@@ -30,16 +30,18 @@ async function closeMongoConnection(connection){
 async function getMongoRecordsMs(limit, connection){
     return new Promise(async (resolve, reject) => {
         let elapsedTime
-        let data
+        let result
         const db = connection.db(dbName);
         const collection = db.collection(collectionName);
         try {
             const startTime = new Date().getTime();
-            data = await collection.find().limit(limit).toArray();
+            result = await collection.find().limit(limit).toArray();
             const endTime = new Date().getTime();
             elapsedTime = endTime - startTime
             resolve(elapsedTime)
-            console.log({message: `Time taken: ${endTime - startTime}ms`, result: data.length});
+            if (displayLogs){
+            console.log(`MongoDB Query: "SELECT * FROM ${dbName} LIMIT ${limit}". Got ${result.length} rows in ${elapsedTime} ms`);
+            }
         } catch (e){
             reject()
         }
@@ -51,11 +53,10 @@ async function displayMongoResult(records, arr, loops){
     arr.forEach((e)=>{
         sum += e;
     })
-    console.log(`"Average ms for ${records} records ran ${loops} times: `, sum / arr.length)
+    console.log(`Average ms for MongoDB on ${records} records ran ${loops} times: `, sum / arr.length)
 }
 
 async function runMongoTest(){
-
     await runOneMongoInstance(records10k, getMongoDb10kRows)
     await runOneMongoInstance(records100k, getMongoDb100kRows)
     await runOneMongoInstance(records200k, getMongoDb200kRows)
@@ -71,14 +72,14 @@ async function runOneMongoInstance(records, arr){
 }
 
 export async function loopMongoTest(){
-    for (let i = 0; i < loop; i++) {
+    for (let i = 0; i < loops; i++) {
         await runMongoTest();
     }
-    await displayMongoResult(records10k, getMongoDb10kRows, getLoopItterations)
-    await displayMongoResult(records100k, getMongoDb100kRows, getLoopItterations)
-    await displayMongoResult(records200k, getMongoDb200kRows, getLoopItterations)
-    await displayMongoResult(records500k, getMongoDb500kRows, getLoopItterations)
-    await displayMongoResult(records1m, getMongoDb1mRows, getLoopItterations)
+    await displayMongoResult(records10k, getMongoDb10kRows, loops)
+    await displayMongoResult(records100k, getMongoDb100kRows, loops)
+    await displayMongoResult(records200k, getMongoDb200kRows, loops)
+    await displayMongoResult(records500k, getMongoDb500kRows, loops)
+    await displayMongoResult(records1m, getMongoDb1mRows, loops)
 }
 
 

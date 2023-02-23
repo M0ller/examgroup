@@ -1,5 +1,5 @@
 import mysql from "mysql"
-import { loopItterations , records10k, records100k, records200k, records500k, records1m } from "./settings.js";
+import { loopItterations ,displayLogs, records10k, records100k, records200k, records500k, records1m } from "./settings.js";
 let loops = loopItterations
 
 let getMySql10kRows = []
@@ -23,7 +23,9 @@ async function startMySqlConnection(){
             console.log('Error connecting to the MySQL Database');
             return;
         }
+        if (displayLogs){
         console.log('Connection established successfully');
+        }
     });
     return connection
 }
@@ -34,7 +36,9 @@ async function closeMySqlConnection(connection){
             console.error('Error disconnecting from database: ', err.stack);
             return;
         }
+        if (displayLogs){
         console.log('Disconnected from database.');
+        }
     });
 }
 
@@ -52,8 +56,9 @@ async function getMySqlRecordsMs(limit, connection){
             }else{
                 const endTime = new Date();
                 elapsedTime = endTime - startTime;
-                console.log(`Query: "SELECT * FROM ${dbName} LIMIT ${limit}". Got ${results.length} rows in ${elapsedTime} ms`);
-                // get10kRows.push(elapsedTime)
+                if (displayLogs) {
+                    console.log(`MySQL Query: "SELECT * FROM ${dbName} LIMIT ${limit}". Got ${results.length} rows in ${elapsedTime} ms`);
+                }
                 resolve(elapsedTime)
             }
         });
@@ -65,12 +70,11 @@ async function displayMySqlResult(records, arr, loops){
     arr.forEach((e)=>{
         sum += e;
     })
-    console.log(`"Average ms for ${records} records ran ${loops} times: `, sum / arr.length)
+    console.log(`Average ms for MySQL   on ${records} records ran ${loops} times: `, sum / arr.length)
 }
 
 
 async function runMySqlTest(){
-
     await runOneMySqlInstance(records10k, getMySql10kRows)
     await runOneMySqlInstance(records100k, getMySql100kRows)
     await runOneMySqlInstance(records200k, getMySql200kRows)

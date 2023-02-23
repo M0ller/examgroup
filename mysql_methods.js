@@ -1,4 +1,6 @@
 import mysql from "mysql"
+import * as dotenv from 'dotenv'
+dotenv.config()
 import { loopItterations ,displayLogs, records10k, records100k, records200k, records500k, records1m } from "./settings.js";
 let loops = loopItterations
 

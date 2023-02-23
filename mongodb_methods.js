@@ -1,5 +1,7 @@
 import {MongoClient} from 'mongodb';
-const dbName = 'examgroup'
+import * as dotenv from 'dotenv'
+dotenv.config()
+const dbName = process.env.DATABASE
 const collectionName = 'user'
 const uri = "mongodb://127.0.0.1";
 

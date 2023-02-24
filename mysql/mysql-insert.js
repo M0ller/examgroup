@@ -86,8 +86,7 @@ export async function insertMySqlRecordsMs(){
 
         let jsonArray = ObjToArray(data)
         console.log("jsonArray: ", jsonArray)
-        // const data = "1, 50, 23, 5, 40"
-        const dataString = JSON.stringify(data)
+
         const query = `INSERT INTO user_insert (id, puzzle, solution, clues, difficulty) VALUES (?)`;
         // console.log(dataString)
 

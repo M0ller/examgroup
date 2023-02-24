@@ -1,8 +1,9 @@
-import mysql from "mysql"
 import * as dotenv from 'dotenv'
 dotenv.config()
-import { loopItterations ,displayLogs, records10k, records100k, records200k, records500k, records1m } from "./settings.js";
+import { loopItterations ,displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
+import {closeMySqlConnection, startMySqlConnection} from "./mysql-server.js";
 let loops = loopItterations
+const dbName = process.env.MYSQL_TABLE
 
 let getMySql10kRows = []
 let getMySql100kRows = []
@@ -10,44 +11,9 @@ let getMySql200kRows = []
 let getMySql500kRows = []
 let getMySql1mRows = []
 
-
-async function startMySqlConnection(){
-    const connection = mysql.createConnection({
-        host: process.env.HOST,
-        user: process.env.USER,
-        password: process.env.PASSWORD,
-        database: process.env.DATABASE
-        // database: process.env.DATABASE  // add local db in project later if possible
-    });
-
-    connection.connect((error) => {
-        if(error){
-            console.log('Error connecting to the MySQL Database');
-            return;
-        }
-        if (displayLogs){
-        console.log('Connection established successfully');
-        }
-    });
-    return connection
-}
-
-async function closeMySqlConnection(connection){
-    connection.end((err) => {
-        if (err) {
-            console.error('Error disconnecting from database: ', err.stack);
-            return;
-        }
-        if (displayLogs){
-        console.log('Disconnected from database.');
-        }
-    });
-}
-
 async function getMySqlRecordsMs(limit, connection){
     return new Promise((resolve, reject)=>{
         let elapsedTime
-        const dbName = "user"
         const startTime = new Date();
 
         const query = `SELECT * FROM ${dbName} LIMIT ${limit}`;
@@ -91,7 +57,7 @@ async function runOneMySqlInstance(records, arr){
     await closeMySqlConnection(connection);
 }
 
-export async function loopMySqlTest(){
+export async function loopMySqlGetTest(){
     for (let i = 0; i < loops ; i++) {
         await runMySqlTest();
     }

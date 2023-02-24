@@ -1,11 +1,11 @@
-import {MongoClient} from 'mongodb';
 import * as dotenv from 'dotenv'
 dotenv.config()
-const dbName = process.env.DATABASE
-const collectionName = 'user'
-const uri = "mongodb://127.0.0.1";
+const dbName = process.env.MONGODB_DATABASE
+const collectionName = process.env.MONGODB_COLLECTION
 
-import { loopItterations, displayLogs, records10k, records100k, records200k, records500k, records1m } from "./settings.js";
+
+import { loopItterations, displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
+import {closeMongoConnection, startMongoConnection} from "./mongodb-server.js";
 let loops = loopItterations
 
 let getMongoDb10kRows = []
@@ -13,21 +13,6 @@ let getMongoDb100kRows = []
 let getMongoDb200kRows = []
 let getMongoDb500kRows = []
 let getMongoDb1mRows = []
-
-async function startMongoConnection(){
-    const connection = new MongoClient(uri);
-
-    try {
-        await connection.connect();
-    }catch (e){
-        console.log(e)
-    }
-    return connection
-}
-
-async function closeMongoConnection(connection){
-    await connection.close();
-}
 
 async function getMongoRecordsMs(limit, connection){
     return new Promise(async (resolve, reject) => {
@@ -73,7 +58,7 @@ async function runOneMongoInstance(records, arr){
     await closeMongoConnection(connection);
 }
 
-export async function loopMongoTest(){
+export async function loopMongoGetTest(){
     for (let i = 0; i < loops; i++) {
         await runMongoTest();
     }

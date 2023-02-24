@@ -5,5 +5,5 @@ export const records200k = 200000
 export const records500k = 500000
 export const records1m = 1000000
 
-export const displayLogs = false
+export const displayLogs = true
 export default { loopItterations, records10k, records100k, records200k, records500k, records1m, displayLogs }

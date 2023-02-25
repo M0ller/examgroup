@@ -4,12 +4,13 @@ import {createMysqlTable, dropMysqlTable, importCsvFile, insertMySqlRecordsMs} f
 import {startMySqlConnection} from "./mysql/mysql-server.js";
 
 // await loopMySqlGetTest()
-console.log("//////////////////////////////////////////////////////////////")
+console.log("**************************************************************")
 // await loopMongoGetTest()
 
 // await createMysqlTable()
 
 // await dropMysqlTable()
 
-// await importCsvFile()
-await insertMySqlRecordsMs()
+
+
+await insertMySqlRecordsMs(10)

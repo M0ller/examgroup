@@ -1,8 +1,8 @@
-import mysql from "mysql";
+import mysql from "mysql2";
 import {displayLogs} from "../settings.js";
 
 export async function startMySqlConnection(){
-    const connection = mysql.createConnection({
+    const connection = await mysql.createConnection({
         host: process.env.HOST,
         user: process.env.USER,
         password: process.env.PASSWORD,
@@ -12,8 +12,7 @@ export async function startMySqlConnection(){
 
     connection.connect((error) => {
         if(error){
-            console.log('Error connecting to the MySQL Database');
-            return;
+            throw error;
         }
         if (displayLogs){
             console.log('Connection established successfully');

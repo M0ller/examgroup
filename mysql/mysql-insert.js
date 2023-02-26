@@ -64,8 +64,7 @@ function optimizeMysqlTable(connection){
     }); // Promise
 }
 function dropMysqlTable(connection) {
-    // const query = `DROP TABLE IF EXISTS ${dbInsertTableName};`
-    const query = `DROP TABLE ${dbInsertTableName}`
+    const query = `DROP TABLE IF EXISTS ${dbInsertTableName};`
     return new Promise((resolve, reject) => {
         connection.query(query, (error) => {
             if (error) {

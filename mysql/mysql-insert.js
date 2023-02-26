@@ -133,7 +133,17 @@ async function insertMySqlRecordsMs(limit, connection, dataFile) {
     const startTime = new Date();
     let elapsedTime
     for (let i = 0; i < limit; i++) {
-        await insertMySqlRecords(limit, connection, dataFile, i)
+        new Promise((resolve, reject) => {
+            const query = `INSERT INTO ${dbInsertTableName} (id, puzzle, solution, clues, difficulty)
+                       VALUES (?)`;
+            connection.query(query, [dataFile[i]], (error, results, fields) => {
+                if (error) {
+                    console.log("Error: ", error);
+                    reject(error)
+                }
+            }); // query
+            resolve()
+        }); // Promise
     }
     const endTime = new Date()
     elapsedTime = endTime - startTime
@@ -142,20 +152,6 @@ async function insertMySqlRecordsMs(limit, connection, dataFile) {
     }
     console.log("elapsedTime: ", elapsedTime)
     return elapsedTime
-}
-
-function insertMySqlRecords(limit, connection, dataFile, i) {
-    return new Promise((resolve, reject) => {
-        const query = `INSERT INTO ${dbInsertTableName} (id, puzzle, solution, clues, difficulty)
-                       VALUES (?)`;
-        connection.query(query, [dataFile[i]], (error, results, fields) => {
-            if (error) {
-                console.log("Error: ", error);
-                reject(error)
-            }
-        }); // query
-        resolve()
-    }); // Promise
 }
 
 async function displayMySqlInsertResult(records, arr, loops) {
@@ -183,7 +179,7 @@ async function runOneMySqlInsertInstance(records, arr, dataFile) {
         await optimizeMysqlTable(connection)
         result = await insertMySqlRecordsMs(records, connection, dataFile)
         arr.push(result)
-        // await dropMysqlTable(connection)
+        await dropMysqlTable(connection)
         await closeMySqlConnection(connection);
 
     } else {

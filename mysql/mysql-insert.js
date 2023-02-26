@@ -10,16 +10,12 @@ import {
 } from "../settings.js";
 import csv from "csvtojson"
 import {closeMySqlConnection, startMySqlConnection} from "./mysql-server.js";
-
 dotenv.config()
 
 let loops = loopItterations
-const dbName = process.env.MYSQL_TABLE
-// const dbInsertName = process.env.MYSQL_TABLE
-const dbInsertTableName = "user_insert"
+const dbInsertTableName = process.env.MYSQL_INSERT_TABLE
+const filePath = process.env.FILE_PATH
 // const csvFilePath = "mysql/sudoku-test.txt"
-// const csvFilePath = "raw-data/sudoku.txt"
-const csvFilePath = "raw-data/sudoku-1m.txt"
 
 let tempRecords = 10
 let insertMySql10Rows = []
@@ -28,9 +24,6 @@ let insertMySql100kRows = []
 let insertMySql200kRows = []
 let insertMySql500kRows = []
 let insertMySql1mRows = []
-
-///////////////////////
-// return new Promise((resolve, reject) => {}); // Promise
 
 function createMysqlTable(connection) {
     const query = `CREATE TABLE IF NOT EXISTS ${dbInsertTableName}( id int, puzzle text, solution double, clues int, difficulty double) ;` // can add "ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;" in the end of create table, should optimize the table
@@ -86,7 +79,7 @@ export async function importCsvFile() {
     return csv({
         delimiter: ",",
         noheader: false,
-    }).fromFile(csvFilePath).subscribe((jsonObj) => {
+    }).fromFile(filePath).subscribe((jsonObj) => {
         return jsonObj
         //     if(jsonObj){
         //     resolve(jsonObj)
@@ -147,7 +140,7 @@ async function insertMySqlRecordsMs(limit, connection, dataFile) {
     const endTime = new Date()
     elapsedTime = endTime - startTime
     if (displayLogs) {
-        console.log(`MySQL Query: INSERT INTO ${dbInsertTableName}. From file "${csvFilePath}". Inserted ${limit} rows in ${elapsedTime} ms`);
+        console.log(`MySQL Query: INSERT INTO ${dbInsertTableName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms`);
     }
     console.log("elapsedTime: ", elapsedTime)
     return elapsedTime
@@ -185,7 +178,6 @@ async function runOneMySqlInsertInstance(records, arr, dataFile) {
         console.log("Not enough rows in data file")
     }
 }
-
 
 export async function loopMySqlInsertTest() {
     const startTimeTotal = new Date();

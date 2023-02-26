@@ -31,8 +31,9 @@ let insertMySql500kRows = []
 let insertMySql1mRows = []
 
 ///////////////////////
+// return new Promise((resolve, reject) => {}); // Promise
 
-export async function createMysqlTable(connection) {
+export function createMysqlTable(connection) {
     // const query = `CREATE TABLE IF NOT EXISTS ${dbInsertTableName}( id int, puzzle text, solution double, clues int, difficulty double);`
     const query = `CREATE TABLE ${dbInsertTableName}
                    (
@@ -42,25 +43,34 @@ export async function createMysqlTable(connection) {
                        clues      int,
                        difficulty double
                    );`
-    connection.query(query, (error, results, fields) => {
-        if (error) {
-            throw error;
-        } else {
-            console.log(`Created Table ${dbInsertTableName}`)
-        }
-    })
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, results, fields) => {
+            if (error) {
+                reject()
+                throw error;
+            } else {
+                resolve()
+                console.log(`Created Table ${dbInsertTableName}`)
+            }
+        }) // Query
+    }); // Promise
+
 }
 
-export async function dropMysqlTable(connection) {
+export function dropMysqlTable(connection) {
     // const query = `DROP TABLE IF EXISTS ${dbInsertTableName};`
     const query = `DROP TABLE ${dbInsertTableName}`
-    connection.query(query, (error) => {
-        if (error) {
-            throw error;
-        } else {
-            console.log(`Dropped table ${dbInsertTableName}`)
-        }
-    })
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error) => {
+            if (error) {
+                reject()
+                throw error;
+            } else {
+                resolve()
+                console.log(`Dropped table ${dbInsertTableName}`)
+            }
+        }) // Query
+    }); // Promise
 }
 
 export async function importCsvFile() {
@@ -107,15 +117,14 @@ export function ObjToArray(obj) {
     });
 }
 
-export async function insertMySqlRecordsMs(limit, connection, dataFile) {
-    console.log("Limit: ", limit)
-    return new Promise(async (resolve, reject) => {
+export function insertMySqlRecordsMs(limit, connection, dataFile) {
+    return new Promise((resolve, reject) => {
         let elapsedTime
         const startTime = new Date();
         for (let i = 0; i < limit; i++) {
             const query = `INSERT INTO ${dbInsertTableName} (id, puzzle, solution, clues, difficulty)
                            VALUES (?)`;
-            connection.query(query, [dataFile[i]], async (error, results, fields) => {
+            connection.query(query, [dataFile[i]], (error, results, fields) => {
                 if (error) {
                     console.log("Error: ", error);
                     reject(error)
@@ -142,35 +151,32 @@ async function displayMySqlInsertResult(records, arr, loops) {
 
 
 async function runMySqlInsertTest(dataFile) {
-
     await runOneMySqlInsertInstance(tempRecords, insertMySql10Rows, dataFile)
-
-    // await runOneMySqlInsertInstance(records10k, getMySql10kRows)
-    // await runOneMySqlInsertInstance(records100k, getMySql100kRows)
-    // await runOneMySqlInsertInstance(records200k, getMySql200kRows)
-    // await runOneMySqlInsertInstance(records500k, getMySql500kRows)
-    // await runOneMySqlInsertInstance(records1m, getMySql1mRows)
 }
-
+// await runOneMySqlInsertInstance(records10k, getMySql10kRows)
+// await runOneMySqlInsertInstance(records100k, getMySql100kRows)
+// await runOneMySqlInsertInstance(records200k, getMySql200kRows)
+// await runOneMySqlInsertInstance(records500k, getMySql500kRows)
+// await runOneMySqlInsertInstance(records1m, getMySql1mRows)
 async function runOneMySqlInsertInstance(records, arr, dataFile) {
     if (records <= dataFile.length) {
         let result
         const connection = await startMySqlConnection()
-        await createMysqlTable(connection).then(async () => {
-            await dropMysqlTable(connection)
-        }).then(async () => {
-            await closeMySqlConnection(connection);
-        })
-        // result = await insertMySqlRecordsMs(records, connection, dataFile)
-        // arr.push(result)
-        // } else {
-        //     console.log("Table is not created yet")
-        // }
+        await createMysqlTable(connection)
+        result = await insertMySqlRecordsMs(records, connection, dataFile)
+        arr.push(result)
+        await dropMysqlTable(connection)
+        await closeMySqlConnection(connection);
 
     } else {
         console.log("Not enough rows in data file")
     }
 }
+
+
+// } else {
+//     console.log("Table is not created yet")
+// }
 
 let tempRecords = 10
 

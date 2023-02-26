@@ -10,6 +10,7 @@ import {
 } from "../settings.js";
 import csv from "csvtojson"
 import {closeMySqlConnection, startMySqlConnection} from "./mysql-server.js";
+
 dotenv.config()
 
 let loops = loopItterations
@@ -25,8 +26,16 @@ let insertMySql200kRows = []
 let insertMySql500kRows = []
 let insertMySql1mRows = []
 
-function createMysqlTable(connection) {
-    const query = `CREATE TABLE IF NOT EXISTS ${dbInsertTableName}( id int, puzzle text, solution double, clues int, difficulty double) ;` // can add "ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;" in the end of create table, should optimize the table
+async function createMysqlTable(connection) {
+    await dropMysqlTable(connection) // making sure the table is dropped
+    const query = `CREATE TABLE IF NOT EXISTS ${dbInsertTableName}
+                   (
+                       id         int,
+                       puzzle     text,
+                       solution   double,
+                       clues      int,
+                       difficulty double
+                   );` // can add "ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;" in the end of create table, should optimize the table
 
     return new Promise((resolve, reject) => {
         connection.query(query, (error, results, fields) => {
@@ -34,15 +43,17 @@ function createMysqlTable(connection) {
                 reject()
                 throw error;
             } else {
+                if (displayLogs) {
+                    console.log(`Created Table ${dbInsertTableName}`)
+                }
                 resolve()
-                console.log(`Created Table ${dbInsertTableName}`)
             }
         }) // Query
     }); // Promise
 
 }
 
-function optimizeMysqlTable(connection){
+function optimizeMysqlTable(connection) {
     return new Promise((resolve, reject) => {
         const query = `OPTIMIZE TABLE ${dbInsertTableName}`
         connection.query(query, (error, results, fields) => {
@@ -50,12 +61,15 @@ function optimizeMysqlTable(connection){
                 reject()
                 throw error;
             } else {
+                if (displayLogs) {
+                    console.log(`Optimized Table ${dbInsertTableName}`)
+                }
                 resolve()
-                console.log(`Optimized Table ${dbInsertTableName}`)
             }
         }) // Query
     }); // Promise
 }
+
 function dropMysqlTable(connection) {
     const query = `DROP TABLE IF EXISTS ${dbInsertTableName};`
     return new Promise((resolve, reject) => {
@@ -64,8 +78,10 @@ function dropMysqlTable(connection) {
                 reject()
                 throw error;
             } else {
+                if (displayLogs) {
+                    console.log(`Dropped table ${dbInsertTableName}`)
+                }
                 resolve()
-                console.log(`Dropped table ${dbInsertTableName}`)
             }
         }) // Query
     }); // Promise
@@ -127,7 +143,7 @@ async function insertMySqlRecordsMs(limit, connection, dataFile) {
     for (let i = 0; i < limit; i++) {
         new Promise((resolve, reject) => {
             const query = `INSERT INTO ${dbInsertTableName} (id, puzzle, solution, clues, difficulty)
-                       VALUES (?)`;
+                           VALUES (?)`;
             connection.query(query, [dataFile[i]], (error, results, fields) => {
                 if (error) {
                     console.log("Error: ", error);
@@ -142,7 +158,6 @@ async function insertMySqlRecordsMs(limit, connection, dataFile) {
     if (displayLogs) {
         console.log(`MySQL Query: INSERT INTO ${dbInsertTableName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms`);
     }
-    console.log("elapsedTime: ", elapsedTime)
     return elapsedTime
 }
 
@@ -155,8 +170,8 @@ async function displayMySqlInsertResult(records, arr, loops) {
 }
 
 async function runMySqlInsertTest(dataFile) {
-    // await runOneMySqlInsertInstance(tempRecords, insertMySql10Rows, dataFile) // remove later
-    await runOneMySqlInsertInstance(records10k, insertMySql10kRows, dataFile)
+    await runOneMySqlInsertInstance(tempRecords, insertMySql10Rows, dataFile) // remove later
+    // await runOneMySqlInsertInstance(records10k, insertMySql10kRows, dataFile)
     // await runOneMySqlInsertInstance(records100k, insertMySql100kRows, dataFile)
     // await runOneMySqlInsertInstance(records200k, insertMySql200kRows, dataFile)
     // await runOneMySqlInsertInstance(records500k, insertMySql500kRows, dataFile)

@@ -21,8 +21,8 @@ export async function startMySqlConnection(){
     return connection
 }
 
-export function closeMySqlConnection(connection){
-    connection.end((err) => {
+export async function closeMySqlConnection(connection){
+    await connection.end((err) => {
         if (err) {
             console.error('Error disconnecting from database: ', err.stack);
             return;

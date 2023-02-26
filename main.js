@@ -6,8 +6,9 @@ import {
 } from "./mysql/mysql-insert.js";
 import {startMySqlConnection} from "./mysql/mysql-server.js";
 
-await loopMySqlGetTest()
+// await loopMySqlGetTest()
 console.log("**************************************************************")
 // await loopMongoGetTest()
-
-// await loopMySqlInsertTest()
+console.log("**************************************************************")
+await loopMySqlInsertTest()
+console.log("**************************************************************")

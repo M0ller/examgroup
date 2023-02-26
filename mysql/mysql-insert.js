@@ -20,9 +20,11 @@ let loops = loopItterations
 const dbName = process.env.MYSQL_TABLE
 // const dbInsertName = process.env.MYSQL_TABLE
 const dbInsertTableName = "user_insert"
-const csvFilePath = "mysql/sudoku-test.txt"
+// const csvFilePath = "mysql/sudoku-test.txt"
 // const csvFilePath = "raw-data/sudoku.txt"
+const csvFilePath = "raw-data/sudoku-1m.txt"
 
+let tempRecords = 10
 let insertMySql10Rows = []
 let insertMySql10kRows = []
 let insertMySql100kRows = []
@@ -33,7 +35,7 @@ let insertMySql1mRows = []
 ///////////////////////
 // return new Promise((resolve, reject) => {}); // Promise
 
-export function createMysqlTable(connection) {
+function createMysqlTable(connection) {
     // const query = `CREATE TABLE IF NOT EXISTS ${dbInsertTableName}( id int, puzzle text, solution double, clues int, difficulty double);`
     const query = `CREATE TABLE ${dbInsertTableName}
                    (
@@ -57,7 +59,7 @@ export function createMysqlTable(connection) {
 
 }
 
-export function dropMysqlTable(connection) {
+function dropMysqlTable(connection) {
     // const query = `DROP TABLE IF EXISTS ${dbInsertTableName};`
     const query = `DROP TABLE ${dbInsertTableName}`
     return new Promise((resolve, reject) => {
@@ -82,6 +84,11 @@ export async function importCsvFile() {
         noheader: false,
     }).fromFile(csvFilePath).subscribe((jsonObj) => {
         return jsonObj
+        //     if(jsonObj){
+        //     resolve(jsonObj)
+        //     } else {
+        //         reject(jsonObj)
+        //     }
     })
     // }) // Promise
 
@@ -117,7 +124,7 @@ export function ObjToArray(obj) {
     });
 }
 
-export function insertMySqlRecordsMs(limit, connection, dataFile) {
+function insertMySqlRecordsMs(limit, connection, dataFile) {
     return new Promise((resolve, reject) => {
         let elapsedTime
         const startTime = new Date();
@@ -151,13 +158,13 @@ async function displayMySqlInsertResult(records, arr, loops) {
 
 
 async function runMySqlInsertTest(dataFile) {
-    await runOneMySqlInsertInstance(tempRecords, insertMySql10Rows, dataFile)
+    await runOneMySqlInsertInstance(tempRecords, insertMySql10Rows, dataFile) // remove later
+    await runOneMySqlInsertInstance(records10k, insertMySql10kRows, dataFile)
+    await runOneMySqlInsertInstance(records100k, insertMySql100kRows, dataFile)
+    await runOneMySqlInsertInstance(records200k, insertMySql200kRows, dataFile)
+    await runOneMySqlInsertInstance(records500k, insertMySql500kRows, dataFile)
+    await runOneMySqlInsertInstance(records1m, insertMySql1mRows, dataFile)
 }
-// await runOneMySqlInsertInstance(records10k, getMySql10kRows)
-// await runOneMySqlInsertInstance(records100k, getMySql100kRows)
-// await runOneMySqlInsertInstance(records200k, getMySql200kRows)
-// await runOneMySqlInsertInstance(records500k, getMySql500kRows)
-// await runOneMySqlInsertInstance(records1m, getMySql1mRows)
 async function runOneMySqlInsertInstance(records, arr, dataFile) {
     if (records <= dataFile.length) {
         let result
@@ -174,12 +181,6 @@ async function runOneMySqlInsertInstance(records, arr, dataFile) {
 }
 
 
-// } else {
-//     console.log("Table is not created yet")
-// }
-
-let tempRecords = 10
-
 export async function loopMySqlInsertTest() {
 
     console.log("Preparing data file... ")
@@ -194,11 +195,11 @@ export async function loopMySqlInsertTest() {
         await runMySqlInsertTest(jsonArray);
     }
     await displayMySqlInsertResult(tempRecords, insertMySql10Rows, loops)
-    // await displayMySqlInsertResult(records10k, insertMySql10kRows, loops)
-    // await displayMySqlInsertResult(records100k, insertMySql100kRows, loops)
-    // await displayMySqlInsertResult(records200k, insertMySql200kRows, loops)
-    // await displayMySqlInsertResult(records500k, insertMySql500kRows, loops)
-    // await displayMySqlInsertResult(records1m, insertMySql1mRows, loops)
+    await displayMySqlInsertResult(records10k, insertMySql10kRows, loops)
+    await displayMySqlInsertResult(records100k, insertMySql100kRows, loops)
+    await displayMySqlInsertResult(records200k, insertMySql200kRows, loops)
+    await displayMySqlInsertResult(records500k, insertMySql500kRows, loops)
+    await displayMySqlInsertResult(records1m, insertMySql1mRows, loops)
 
 
 }

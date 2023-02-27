@@ -13,5 +13,5 @@ MONGODB_COLLECTION="your mongodb collection name" <br>
 MYSQL_INSERT_TABLE="your msql table name for testing inserts" <br>
 FILE_PATH="raw-data/sudoku-1m.txt" (Put the large datafile in a directory named raw-data) <br>
 
-Select is done with Limit 
-Inserts is done with limit
+Select is done with Limit <br>
+Inserts is done with limit <br>

@@ -6,7 +6,6 @@ Add your own .env file with the structure: <br>
 PASSWORD="your password" <br>
 USER="user for mysql" <br>
 HOST="host for mysql" <br>
-DATABASE="your database name" <br>
 MYSQL_DATABASE="your mysql database name" <br>
 MONGODB_DATABASE="your mongodb database name" <br>
 MYSQL_TABLE="your msql table name" <br>

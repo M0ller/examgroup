@@ -170,24 +170,28 @@ async function displayMySqlInsertResult(records, arr, loops) {
 }
 
 async function runMySqlInsertTest(dataFile) {
-    await runOneMySqlInsertInstance(tempRecords, insertMySql10Rows, dataFile) // remove later
-    // await runOneMySqlInsertInstance(records10k, insertMySql10kRows, dataFile)
+    // await runOneMySqlInsertInstance(tempRecords, insertMySql10Rows, dataFile) // remove later
+    await runOneMySqlInsertInstance(records10k, insertMySql10kRows, dataFile)
     // await runOneMySqlInsertInstance(records100k, insertMySql100kRows, dataFile)
     // await runOneMySqlInsertInstance(records200k, insertMySql200kRows, dataFile)
     // await runOneMySqlInsertInstance(records500k, insertMySql500kRows, dataFile)
     // await runOneMySqlInsertInstance(records1m, insertMySql1mRows, dataFile)
 }
 
+import {connection} from "./mysql-server.js";
+
 async function runOneMySqlInsertInstance(records, arr, dataFile) {
     if (records <= dataFile.length) {
         let result
-        const connection = await startMySqlConnection()
+        // const connection = await startMySqlConnection()
+
         await createMysqlTable(connection)
         await optimizeMysqlTable(connection)
         result = await insertMySqlRecordsMs(records, connection, dataFile)
         arr.push(result)
         await dropMysqlTable(connection)
-        await closeMySqlConnection(connection);
+        await connection.close()
+        // await closeMySqlConnection(connection);
 
     } else {
         console.log("Not enough rows in data file")

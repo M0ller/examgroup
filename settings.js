@@ -1,6 +1,6 @@
 
 
-export const loopItterations =1
+export const loopItterations =3
 export const records10k = 10000
 export const records100k = 100000
 export const records200k = 200000

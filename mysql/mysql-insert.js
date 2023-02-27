@@ -9,7 +9,7 @@ import {
     records500k,
 } from "../settings.js";
 import csv from "csvtojson"
-import {closeMySqlConnection, startMySqlConnection} from "./mysql-server.js";
+import {closeMySqlConnection, createMySqlConnection, startMySqlConnection} from "./mysql-server.js";
 
 dotenv.config()
 
@@ -25,6 +25,7 @@ let insertMySql100kRows = []
 let insertMySql200kRows = []
 let insertMySql500kRows = []
 let insertMySql1mRows = []
+// import {connection} from "./mysql-server.js";
 
 async function createMysqlTable(connection) {
     await dropMysqlTable(connection) // making sure the table is dropped
@@ -178,20 +179,21 @@ async function runMySqlInsertTest(dataFile) {
     // await runOneMySqlInsertInstance(records1m, insertMySql1mRows, dataFile)
 }
 
-import {connection} from "./mysql-server.js";
+
 
 async function runOneMySqlInsertInstance(records, arr, dataFile) {
     if (records <= dataFile.length) {
         let result
-        // const connection = await startMySqlConnection()
-
+        const connection = await createMySqlConnection()
+        await startMySqlConnection(connection)
+        // await connection.open()
         await createMysqlTable(connection)
         await optimizeMysqlTable(connection)
         result = await insertMySqlRecordsMs(records, connection, dataFile)
         arr.push(result)
         await dropMysqlTable(connection)
-        await connection.close()
-        // await closeMySqlConnection(connection);
+        // await connection.close()
+        await closeMySqlConnection(connection);
 
     } else {
         console.log("Not enough rows in data file")
@@ -212,6 +214,7 @@ export async function loopMySqlInsertTest() {
     for (let i = 0; i < loops; i++) {
         await runMySqlInsertTest(jsonArray);
     }
+
     await displayMySqlInsertResult(tempRecords, insertMySql10Rows, loops)
     await displayMySqlInsertResult(records10k, insertMySql10kRows, loops)
     await displayMySqlInsertResult(records100k, insertMySql100kRows, loops)

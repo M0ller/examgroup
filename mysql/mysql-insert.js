@@ -171,8 +171,8 @@ async function displayMySqlInsertResult(records, arr, loops) {
 }
 
 async function runMySqlInsertTest(dataFile) {
-    // await runOneMySqlInsertInstance(tempRecords, insertMySql10Rows, dataFile) // remove later
-    await runOneMySqlInsertInstance(records10k, insertMySql10kRows, dataFile)
+    await runOneMySqlInsertInstance(tempRecords, insertMySql10Rows, dataFile) // remove later
+    // await runOneMySqlInsertInstance(records10k, insertMySql10kRows, dataFile, connection)
     // await runOneMySqlInsertInstance(records100k, insertMySql100kRows, dataFile)
     // await runOneMySqlInsertInstance(records200k, insertMySql200kRows, dataFile)
     // await runOneMySqlInsertInstance(records500k, insertMySql500kRows, dataFile)
@@ -211,9 +211,12 @@ export async function loopMySqlInsertTest() {
     console.log("Loading complete, time: ", elapsedTime)
     let jsonArray = ObjToArray(data)
 
+    // const connection = await createMySqlConnection()
+    // await startMySqlConnection(connection)
     for (let i = 0; i < loops; i++) {
         await runMySqlInsertTest(jsonArray);
     }
+    // await closeMySqlConnection(connection);
 
     await displayMySqlInsertResult(tempRecords, insertMySql10Rows, loops)
     await displayMySqlInsertResult(records10k, insertMySql10kRows, loops)

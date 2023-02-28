@@ -18,7 +18,9 @@ console.log("MySQL INSERT test:")
 // await loopMySqlInsertTest()
 console.log("**************************************************************")
 console.log("MongoDB INSERT test:")
-await createMongodbCollection()
-await dropMongodbCollection()
+// for (let i = 0; i < 10; i++) {
+    await createMongodbCollection()
+    await dropMongodbCollection()
+// }
 // await closeMongoConnection(con)
 console.log("**************************************************************")

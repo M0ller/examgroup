@@ -39,6 +39,7 @@ export async function createMongodbCollection() { // singleton
             db.close()
         }
     })
+    console.log("MongoDB collection created!")
     await client.close()
 }
 
@@ -55,6 +56,7 @@ export async function dropMongodbCollection() { // singleton
             db.close()
         }
     });
+    console.log("MongoDB collection dropped!")
     await client.close()
 }
 
@@ -79,8 +81,6 @@ export async function dropMongodbCollection() { // singleton
 //     //     console.log("Error: ", e)
 //     // }
 // }
-//
-//
 // export function dropMongodbCollection(connection) {
 //     return new Promise((resolve, reject) => {
 //     // try {

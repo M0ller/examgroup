@@ -106,12 +106,13 @@ async function insertMongodbRecordsMs(limit, dataFile) {
     const startTime = new Date();
     let elapsedTime
     for (let i = 0; i < limit; i++) {
+        // TODO create mongodb insert. test without Promise if it works without it.
         // new Promise(async (resolve, reject) => {
             const client = mongoClient.getMongoClient()
             await client.connect()
             const db = await client.db("examgroup")
-            // db.collection("mongodb_insert").insert()
 
+            // db.collection("mongodb_insert").insert()
             //
             // resolve()
         // }); // Promise

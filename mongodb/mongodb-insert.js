@@ -102,21 +102,19 @@ export async function dropMongodbCollection() { // singleton
 //     // }
 // }
 
-async function insertMongodbRecordsMs(limit, connection, dataFile) {
+async function insertMongodbRecordsMs(limit, dataFile) {
     const startTime = new Date();
     let elapsedTime
     for (let i = 0; i < limit; i++) {
-        new Promise((resolve, reject) => {
-            const query = `INSERT INTO ${dbInsertTableName} (id, puzzle, solution, clues, difficulty)
-                           VALUES (?)`;
-            connection.query(query, [dataFile[i]], (error, results, fields) => {
-                if (error) {
-                    console.log("Error: ", error);
-                    reject(error)
-                }
-            }); // query
-            resolve()
-        }); // Promise
+        // new Promise(async (resolve, reject) => {
+            const client = mongoClient.getMongoClient()
+            await client.connect()
+            const db = await client.db("examgroup")
+            // db.collection("mongodb_insert").insert()
+
+            //
+            // resolve()
+        // }); // Promise
     }
     const endTime = new Date()
     elapsedTime = endTime - startTime
@@ -146,13 +144,10 @@ async function runMongodbInsertTest(dataFile) {
 async function runOneMongodbInsertInstance(records, arr, dataFile) {
     if (records <= dataFile.length) {
         let result
-        const connection = await startMySqlConnection()
-        await createMongodbCollection(connection)
-        result = await insertMongodbRecordsMs(records, connection, dataFile)
+        await createMongodbCollection() // param collection name
+        result = await insertMongodbRecordsMs(records, dataFile)
         arr.push(result)
-        await dropMongodbCollection(connection)
-        await closeMySqlConnection(connection);
-
+        await dropMongodbCollection()// param collection name
     } else {
         console.log("Not enough rows in data file")
     }

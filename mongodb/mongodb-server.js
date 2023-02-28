@@ -7,6 +7,7 @@ export async function startMongoConnection() {
 
     try {
         await connection.connect()
+
         console.log("Connection established successfully")
     } catch (e) {
         console.log(e)
@@ -22,3 +23,39 @@ export async function closeMongoConnection(connection) {
         console.log(e)
     }
 }
+
+////////// Singleton? ////////////
+
+let client;
+
+class MongoDBSingleton {
+    constructor() {
+        if(!client){
+            client = new MongoClient(uri);
+        }
+    }
+
+    async connect() {
+        try {
+            await client.connect()
+            console.log("Connection established successfully")
+        }catch (e) {
+            console.log(e)
+        }
+    }
+
+    async close() {
+        try {
+            await client.close()
+        }catch (e) {
+            console.log(e)
+        }
+    }
+
+    getMongoClient(){
+        return client
+    }
+
+}
+
+export const mongoClient = new MongoDBSingleton()

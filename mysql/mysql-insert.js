@@ -10,16 +10,12 @@ import {
 } from "../settings.js";
 import csv from "csvtojson"
 import {closeMySqlConnection, startMySqlConnection} from "./mysql-server.js";
-
 dotenv.config()
 
 let loops = loopItterations
 const dbInsertTableName = process.env.MYSQL_INSERT_TABLE
 const filePath = process.env.FILE_PATH
-// const csvFilePath = "mysql/sudoku-test.txt"
 
-let tempRecords = 10
-let insertMySql10Rows = []
 let insertMySql10kRows = []
 let insertMySql100kRows = []
 let insertMySql200kRows = []
@@ -50,7 +46,6 @@ async function createMysqlTable(connection) {
             }
         }) // Query
     }); // Promise
-
 }
 
 function optimizeMysqlTable(connection) {
@@ -105,7 +100,6 @@ export async function importCsvFile() {
     })
     // }) // Promise
 
-
     // let stream = fs.createReadStream(csvFilePath);
     //
     // let csvStream = await fastcsv.parse()
@@ -127,7 +121,6 @@ export async function importCsvFile() {
 
 export function ObjToArray(obj) {
     let arr = obj instanceof Array;
-
     return (arr ? obj : Object.keys(obj)).map(function (i) {
         let val = arr ? i : obj[i];
         if (typeof val === 'object')
@@ -166,32 +159,41 @@ async function displayMySqlInsertResult(records, arr, loops) {
     arr.forEach((e) => {
         sum += e;
     })
-    console.log(`Average ms for MySQL insert  on ${records} records ran ${loops} times: `, sum / arr.length)
+    console.log(`Average ms for MySQL INSERT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
 }
 
-async function runMySqlInsertTest(dataFile) {
-    await runOneMySqlInsertInstance(tempRecords, insertMySql10Rows, dataFile) // remove later
-    // await runOneMySqlInsertInstance(records10k, insertMySql10kRows, dataFile)
-    // await runOneMySqlInsertInstance(records100k, insertMySql100kRows, dataFile)
-    // await runOneMySqlInsertInstance(records200k, insertMySql200kRows, dataFile)
-    // await runOneMySqlInsertInstance(records500k, insertMySql500kRows, dataFile)
-    // await runOneMySqlInsertInstance(records1m, insertMySql1mRows, dataFile)
-}
-
-async function runOneMySqlInsertInstance(records, arr, dataFile) {
+async function runOneMySqlInsertInstance(records, dataFile) {
     if (records <= dataFile.length) {
         let result
         const connection = await startMySqlConnection()
         await createMysqlTable(connection)
         await optimizeMysqlTable(connection)
         result = await insertMySqlRecordsMs(records, connection, dataFile)
-        arr.push(result)
+        // arr.push(result)
         await dropMysqlTable(connection)
         await closeMySqlConnection(connection);
 
+        return result
     } else {
         console.log("Not enough rows in data file")
     }
+}
+
+// async function runMySqlInsertTest(dataFile) {
+//     await runOneMySqlInsertInstance(records10k, insertMySql10kRows, dataFile)
+//     await runOneMySqlInsertInstance(records100k, insertMySql100kRows, dataFile)
+//     await runOneMySqlInsertInstance(records200k, insertMySql200kRows, dataFile)
+//     await runOneMySqlInsertInstance(records500k, insertMySql500kRows, dataFile)
+//     await runOneMySqlInsertInstance(records1m, insertMySql1mRows, dataFile)
+// }
+
+async function runMySqlInsertTest(loops, dataFile, records) {
+    let arr = [];
+    for (let i = 0; i < loops; i++) {
+        let result = await runOneMySqlInsertInstance(records, dataFile)
+        arr.push(result)
+    }
+    await displayMySqlInsertResult(records, arr, loops)
 }
 
 export async function loopMySqlInsertTest() {
@@ -205,15 +207,21 @@ export async function loopMySqlInsertTest() {
     console.log("Loading complete, time: ", elapsedTime)
     let jsonArray = ObjToArray(data)
 
-    for (let i = 0; i < loops; i++) {
-        await runMySqlInsertTest(jsonArray);
-    }
-    await displayMySqlInsertResult(tempRecords, insertMySql10Rows, loops)
-    await displayMySqlInsertResult(records10k, insertMySql10kRows, loops)
-    await displayMySqlInsertResult(records100k, insertMySql100kRows, loops)
-    await displayMySqlInsertResult(records200k, insertMySql200kRows, loops)
-    await displayMySqlInsertResult(records500k, insertMySql500kRows, loops)
-    await displayMySqlInsertResult(records1m, insertMySql1mRows, loops)
+    // for (let i = 0; i < loops; i++) {
+    //     await runMySqlInsertTest(jsonArray);
+    // }
+
+    // await displayMySqlInsertResult(records10k, insertMySql10kRows, loops)
+    // await displayMySqlInsertResult(records100k, insertMySql100kRows, loops)
+    // await displayMySqlInsertResult(records200k, insertMySql200kRows, loops)
+    // await displayMySqlInsertResult(records500k, insertMySql500kRows, loops)
+    // await displayMySqlInsertResult(records1m, insertMySql1mRows, loops)
+
+    await runMySqlInsertTest(loops, jsonArray, records10k)
+    await runMySqlInsertTest(loops, jsonArray, records100k)
+    await runMySqlInsertTest(loops, jsonArray, records200k)
+    await runMySqlInsertTest(loops, jsonArray, records500k)
+    await runMySqlInsertTest(loops, jsonArray, records1m)
 
     const endTimeTotal = new Date();
     let elapsedTimeTotal = endTimeTotal - startTimeTotal

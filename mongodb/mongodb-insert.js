@@ -10,16 +10,13 @@ import {
 } from "../settings.js";
 import {importCsvFile, ObjToArray} from "../mysql/mysql-insert.js";
 import {mongoClient} from "./mongodb-server.js";
-
 dotenv.config()
 
 let loops = loopItterations
-const dbInsertTableName = process.env.MYSQL_INSERT_TABLE
+const dbInsertCollectionName = process.env.MONGODB_INSERT_COLLECTION
+const dbName = process.env.MONGODB_DATABASE
 const filePath = process.env.FILE_PATH
-// const csvFilePath = "mysql/sudoku-test.txt"
 
-let tempRecords = 10
-let insertMongodb10Rows = []
 let insertMongodb10kRows = []
 let insertMongodb100kRows = []
 let insertMongodb200kRows = []
@@ -29,9 +26,8 @@ let insertMongodb1mRows = []
 export async function createMongodbCollection() { // singleton
     const client = mongoClient.getMongoClient()
     await client.connect()
-    const db = await client.db("examgroup")
-    await db.createCollection("mongodb_insert", function (err, res) {
-            console.log("MongoDB collection created!")
+    const db = await client.db(dbName)
+    await db.createCollection(dbInsertCollectionName, function (err, res) {
         if (err) {
             throw err;
         } else {
@@ -39,16 +35,17 @@ export async function createMongodbCollection() { // singleton
             db.close()
         }
     })
-    console.log("MongoDB collection created!")
+    if (displayLogs) {
+        console.log(`MongoDB collection ${dbInsertCollectionName} created!`)
+    }
     await client.close()
 }
-
 
 export async function dropMongodbCollection() { // singleton
     const client = mongoClient.getMongoClient()
     await client.connect()
-    const db = await client.db("examgroup")
-    await db.dropCollection("mongodb_insert", function (err, res) {
+    const db = await client.db(dbName)
+    await db.dropCollection(dbInsertCollectionName, function (err, res) {
         if (err) {
             throw err;
         } else {
@@ -56,71 +53,28 @@ export async function dropMongodbCollection() { // singleton
             db.close()
         }
     });
-    console.log("MongoDB collection dropped!")
+    if (displayLogs) {
+    console.log(`MongoDB collection ${dbInsertCollectionName} dropped!`)
+    }
     await client.close()
 }
 
-// export function createMongodbCollection(connection) {
-//     return new Promise((resolve, reject) => {
-//     // try {
-//         const db = connection.db("examgroup")
-//         db.createCollection("mongodb_insert", function (err, res) {
-//             if (err) {
-//                 reject()
-//                 throw err;
-//             }
-//
-//             console.log("Collection created!");
-//             // db.close()
-//         })
-//         resolve()
-//         console.log("Collection created!");
-//     })
-//
-//     // } catch (e) {
-//     //     console.log("Error: ", e)
-//     // }
-// }
-// export function dropMongodbCollection(connection) {
-//     return new Promise((resolve, reject) => {
-//     // try {
-//         const db = connection.db("examgroup")
-//         db.dropCollection("mongodb_insert", function (err, del) {
-//             if (err) {
-//                 reject()
-//                 throw err;
-//             }
-//             if (del) {
-//                 resolve()
-//             console.log("Collection deleted")
-//             // db.close()
-//             }
-//         });
-//     })
-//     // }catch (e) {
-//     //     console.log("Error: ", e)
-//     // }
-// }
-
 async function insertMongodbRecordsMs(limit, dataFile) {
-    const startTime = new Date();
     let elapsedTime
+    let fileLimit = []
     for (let i = 0; i < limit; i++) {
-        // TODO create mongodb insert. test without Promise if it works without it.
-        // new Promise(async (resolve, reject) => {
-            const client = mongoClient.getMongoClient()
-            await client.connect()
-            const db = await client.db("examgroup")
-
-            // db.collection("mongodb_insert").insert()
-            //
-            // resolve()
-        // }); // Promise
+        fileLimit.push(dataFile[i])
     }
+    const client = mongoClient.getMongoClient()
+    await client.connect()
+    const db = await client.db(dbName)
+    const startTime = new Date();
+    await db.collection(dbInsertCollectionName).insertMany(fileLimit)
+    client.close()
     const endTime = new Date()
     elapsedTime = endTime - startTime
     if (displayLogs) {
-        console.log(`MySQL Query: INSERT INTO ${dbInsertTableName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms`);
+        console.log(`MySQL Query: INSERT INTO ${dbInsertCollectionName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms`);
     }
     return elapsedTime
 }
@@ -130,16 +84,15 @@ async function displayMongodbInsertResult(records, arr, loops) {
     arr.forEach((e) => {
         sum += e;
     })
-    console.log(`Average ms for MySQL insert  on ${records} records ran ${loops} times: `, sum / arr.length)
+    console.log(`Average ms for MongoDB INSERT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
 }
 
 async function runMongodbInsertTest(dataFile) {
-    await runOneMongodbInsertInstance(tempRecords, insertMongodb10Rows, dataFile) // remove later
-    // await runOneMySqlInsertInstance(records10k, insertMySql10kRows, dataFile)
-    // await runOneMySqlInsertInstance(records100k, insertMySql100kRows, dataFile)
-    // await runOneMySqlInsertInstance(records200k, insertMySql200kRows, dataFile)
-    // await runOneMySqlInsertInstance(records500k, insertMySql500kRows, dataFile)
-    // await runOneMySqlInsertInstance(records1m, insertMySql1mRows, dataFile)
+    await runOneMongodbInsertInstance(records10k, insertMongodb10kRows, dataFile)
+    await runOneMongodbInsertInstance(records100k, insertMongodb100kRows, dataFile)
+    await runOneMongodbInsertInstance(records200k, insertMongodb200kRows, dataFile)
+    await runOneMongodbInsertInstance(records500k, insertMongodb500kRows, dataFile)
+    await runOneMongodbInsertInstance(records1m, insertMongodb1mRows, dataFile)
 }
 
 async function runOneMongodbInsertInstance(records, arr, dataFile) {
@@ -168,7 +121,6 @@ export async function loopMongodbInsertTest() {
     for (let i = 0; i < loops; i++) {
         await runMongodbInsertTest(jsonArray);
     }
-    await displayMongodbInsertResult(tempRecords, insertMongodb10Rows, loops)
     await displayMongodbInsertResult(records10k, insertMongodb10kRows, loops)
     await displayMongodbInsertResult(records100k, insertMongodb100kRows, loops)
     await displayMongodbInsertResult(records200k, insertMongodb200kRows, loops)

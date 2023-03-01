@@ -1,33 +1,9 @@
 import {MongoClient} from "mongodb";
+import {displayLogs} from "../settings.js";
 
 const uri = "mongodb://127.0.0.1";
 
-export async function startMongoConnection() {
-    const connection = new MongoClient(uri);
-
-    try {
-        await connection.connect()
-
-        console.log("Connection established successfully")
-    } catch (e) {
-        console.log(e)
-    }
-    return connection
-}
-
-export async function closeMongoConnection(connection) {
-    try {
-        await connection.close();
-        console.log("Disconnected from database.")
-    } catch (e) {
-        console.log(e)
-    }
-}
-
-////////// Singleton? ////////////
-
 let client;
-
 class MongoDBSingleton {
     constructor() {
         if(!client){
@@ -38,7 +14,9 @@ class MongoDBSingleton {
     async connect() {
         try {
             await client.connect()
+            if (displayLogs) {
             console.log("Connection established successfully")
+            }
         }catch (e) {
             console.log(e)
         }
@@ -47,6 +25,9 @@ class MongoDBSingleton {
     async close() {
         try {
             await client.close()
+            if (displayLogs) {
+                console.log('Disconnected from database.');
+            }
         }catch (e) {
             console.log(e)
         }

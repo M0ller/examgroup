@@ -38,7 +38,7 @@ async function displayMySqlResult(records, arr, loops){
     arr.forEach((e)=>{
         sum += e;
     })
-    console.log(`Average ms for MySQL   on ${records} records ran ${loops} times: `, sum / arr.length)
+    console.log(`Average ms for MySQL SELECT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
 }
 
 

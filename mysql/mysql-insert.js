@@ -9,7 +9,7 @@ import {
     records500k,
 } from "../settings.js";
 import csv from "csvtojson"
-import {closeMySqlConnection, startMySqlConnection} from "./mysql-server.js";
+import {closeMySqlConnection, mysqlSingleton, startMySqlConnection} from "./mysql-server.js";
 dotenv.config()
 
 let loops = loopItterations
@@ -22,8 +22,9 @@ let insertMySql200kRows = []
 let insertMySql500kRows = []
 let insertMySql1mRows = []
 
-async function createMysqlTable(connection) {
-    await dropMysqlTable(connection) // making sure the table is dropped
+async function createMysqlTable() {
+    const connection = mysqlSingleton.getInstance()
+    await dropMysqlTable() // making sure the table is dropped
     const query = `CREATE TABLE IF NOT EXISTS ${dbInsertTableName}
                    (
                        id         int,
@@ -65,7 +66,8 @@ function optimizeMysqlTable(connection) {
     }); // Promise
 }
 
-function dropMysqlTable(connection) {
+function dropMysqlTable() {
+    const connection = mysqlSingleton.getInstance()
     const query = `DROP TABLE IF EXISTS ${dbInsertTableName};`
     return new Promise((resolve, reject) => {
         connection.query(query, (error) => {

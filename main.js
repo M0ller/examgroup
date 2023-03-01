@@ -1,9 +1,8 @@
 import {loopMySqlInsertTest} from "./mysql/mysql-insert.js";
 import {loopMongodbInsertTest} from "./mongodb/mongodb-insert.js";
-// import {getInstance} from './mysql/mysql-server.js'
 import {loopMySqlGetTest} from "./mysql/mysql-get.js";
 import {loopMongoGetTest} from "./mongodb/mongodb-get.js";
-import {closeMySqlConnection, getInstance} from "./mysql/mysql-server.js";
+import {getInstance} from "./mysql/mysql-server.js";
 
 const connection = getInstance()
 console.log("**************************************************************")
@@ -14,8 +13,8 @@ console.log("MongoDB SELECT test:")
 // await loopMongoGetTest()
 console.log("**************************************************************")
 console.log("MySQL INSERT test:")
-// await loopMySqlInsertTest(connection)
+await loopMySqlInsertTest(connection)
 console.log("**************************************************************")
 console.log("MongoDB INSERT test:")
-await loopMongodbInsertTest()
+// await loopMongodbInsertTest()
 console.log("**************************************************************")

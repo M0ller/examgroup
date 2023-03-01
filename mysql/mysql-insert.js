@@ -120,6 +120,7 @@ function displayMySqlInsertResult(records, arr, loops) {
 async function runOneMySqlInsertInstance(records, dataFile, connection) {
     if (records <= dataFile.length) {
         let result
+
         await createMysqlTable(connection)
         result = await insertMySqlRecordsMs(records, connection, dataFile)
 
@@ -139,6 +140,7 @@ async function runMySqlInsertTest(loops, dataFile, records, connection) {
 }
 
 export async function loopMySqlInsertTest(connection) {
+    console.log("Starting MySQL Insert Test ")
         const startTimeTotal = new Date();
         console.log("Preparing data file... ")
         const startTime = new Date();
@@ -150,9 +152,9 @@ export async function loopMySqlInsertTest(connection) {
 
         await runMySqlInsertTest(loops, jsonArray, records10k, connection)
         await runMySqlInsertTest(loops, jsonArray, records100k, connection)
-        //await runMySqlInsertTest(loops, jsonArray, records200k)
-        //await runMySqlInsertTest(loops, jsonArray, records500k)
-        //await runMySqlInsertTest(loops, jsonArray, records1m)
+        await runMySqlInsertTest(loops, jsonArray, records200k, connection)
+        await runMySqlInsertTest(loops, jsonArray, records500k, connection)
+        await runMySqlInsertTest(loops, jsonArray, records1m, connection)
 
         const endTimeTotal = new Date();
         let elapsedTimeTotal = endTimeTotal - startTimeTotal

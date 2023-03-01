@@ -48,7 +48,7 @@ async function runMongoInstance(loops, records){
     let result = await getMongoRecordsMs(records)
     arr.push(result)
     }
-    displayMongoResult(records10k, arr, loops)
+    displayMongoResult(records, arr, loops)
 }
 
 export async function loopMongoGetTest(){
@@ -56,10 +56,10 @@ export async function loopMongoGetTest(){
     const startTime = new Date();
 
     await runMongoInstance(loops, records10k)
-    // await runMongoInstance(loops, records100k)
-    // await runMongoInstance(loops, records200k)
-    // await runMongoInstance(loops, records500k)
-    // await runMongoInstance(loops, records1m)
+    await runMongoInstance(loops, records100k)
+    await runMongoInstance(loops, records200k)
+    await runMongoInstance(loops, records500k)
+    await runMongoInstance(loops, records1m)
 
     const endTime = new Date();
     let elapsedTime = endTime - startTime

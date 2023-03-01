@@ -49,10 +49,10 @@ export async function loopMySqlGetTest(connection){
     const startTime = new Date();
 
     await runMySqlGetTest(loops, records10k, connection)
-    // await runMySqlGetTest(loops, records100k, connection)
-    // await runMySqlGetTest(loops, records200k, connection)
-    // await runMySqlGetTest(loops, records500k, connection)
-    // await runMySqlGetTest(loops, records1m, connection)
+    await runMySqlGetTest(loops, records100k, connection)
+    await runMySqlGetTest(loops, records200k, connection)
+    await runMySqlGetTest(loops, records500k, connection)
+    await runMySqlGetTest(loops, records1m, connection)
 
     const endTime = new Date();
     let elapsedTime = endTime - startTime

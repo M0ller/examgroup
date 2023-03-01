@@ -99,7 +99,7 @@ async function runMongodbInsertInstance(loops, records, dataFile) {
 
 export async function loopMongodbInsertTest() {
     const startTimeTotal = new Date();
-
+    console.log("Starting MongoDB Insert Test ")
     console.log("Preparing data file... ")
     const startTime = new Date();
     const data = await importCsvFile()
@@ -108,10 +108,10 @@ export async function loopMongodbInsertTest() {
     console.log("Loading complete, time: ", elapsedTime)
 
     await runMongodbInsertInstance(loops, records10k, data)
-    // await runMongodbInsertInstance(loops, records100k, jsonArray)
-    // await runMongodbInsertInstance(loops, records200k, jsonArray)
-    // await runMongodbInsertInstance(loops, records500k, jsonArray)
-    // await runMongodbInsertInstance(loops, records1m, jsonArray)
+    await runMongodbInsertInstance(loops, records100k, data)
+    await runMongodbInsertInstance(loops, records200k, data)
+    await runMongodbInsertInstance(loops, records500k, data)
+    await runMongodbInsertInstance(loops, records1m, data)
 
     const endTimeTotal = new Date();
     let elapsedTimeTotal = endTimeTotal - startTimeTotal

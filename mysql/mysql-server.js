@@ -1,24 +1,4 @@
-import mysql from "mysql2";
 import {displayLogs} from "../settings.js";
-
-export async function startMySqlConnection() {
-    const connection = await mysql.createPool({
-        host: process.env.HOST,
-        user: process.env.USER,
-        password: process.env.PASSWORD,
-        database: process.env.MYSQL_DATABASE // add local db in the project later if possible
-    });
-
-    connection.getConnection((error) => {
-        if (error) {
-            throw error;
-        }
-        if (displayLogs) {
-            console.log('Connection established successfully');
-        }
-    });
-    return connection
-}
 
 export async function closeMySqlConnection(connection) {
     await connection.end((err) => {
@@ -289,29 +269,3 @@ export async function closeMySqlConnection(connection) {
 //     };
 // })();
 
-export const mysqlSingleton = (function () {
-    let instance
-    function createInstance() {
-        instance = mysql.createPool({
-            host: process.env.HOST,
-            user: process.env.USER,
-            password: process.env.PASSWORD,
-            database: process.env.MYSQL_DATABASE
-        }).getConnection((err)=>{
-            if(err) throw err;
-            console.log("created connection")
-        });
-        return instance;
-    }
-    return {
-        getInstance: function () {
-            if (!instance) {
-                console.log("Singleton up and running")
-                instance = createInstance()
-                return instance
-            } else{
-                console.log("NANI!?")
-            }
-        }
-    };
-})();

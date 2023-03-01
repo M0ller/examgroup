@@ -1,7 +1,8 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
 import { loopItterations ,displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
-import {closeMySqlConnection, startMySqlConnection} from "./mysql-server.js";
+import {closeMySqlConnection} from "./mysql-server.js";
+import {getInstance} from "./mysql-singleton.js";
 let loops = loopItterations
 const dbName = process.env.MYSQL_TABLE
 
@@ -51,10 +52,10 @@ async function runMySqlTest(){
 }
 
 async function runOneMySqlInstance(records, arr){
-    const connection = await startMySqlConnection()
+    const connection = getInstance()
     let result = await getMySqlRecordsMs(records, connection)
     arr.push(result)
-    await closeMySqlConnection(connection);
+    //await closeMySqlConnection(connection);
 }
 
 export async function loopMySqlGetTest(){

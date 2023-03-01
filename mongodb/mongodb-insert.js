@@ -17,17 +17,12 @@ const dbInsertCollectionName = process.env.MONGODB_INSERT_COLLECTION
 const dbName = process.env.MONGODB_DATABASE
 const filePath = process.env.FILE_PATH
 
-let insertMongodb10kRows = []
-let insertMongodb100kRows = []
-let insertMongodb200kRows = []
-let insertMongodb500kRows = []
-let insertMongodb1mRows = []
 
 export async function createMongodbCollection() { // singleton
     const client = mongoClient.getMongoClient()
     await client.connect()
     const db = await client.db(dbName)
-    await db.createCollection(dbInsertCollectionName, function (err, res) {
+    await db.createCollection(dbInsertCollectionName, function (err) {
         if (err) {
             throw err;
         } else {
@@ -45,7 +40,7 @@ export async function dropMongodbCollection() { // singleton
     const client = mongoClient.getMongoClient()
     await client.connect()
     const db = await client.db(dbName)
-    await db.dropCollection(dbInsertCollectionName, function (err, res) {
+    await db.dropCollection(dbInsertCollectionName, function (err) {
         if (err) {
             throw err;
         } else {
@@ -79,7 +74,7 @@ async function insertMongodbRecordsMs(limit, dataFile) {
     return elapsedTime
 }
 
-async function displayMongodbInsertResult(records, arr, loops) {
+function displayMongodbInsertResult(records, arr, loops) {
     let sum = 0
     arr.forEach((e) => {
         sum += e;
@@ -87,21 +82,16 @@ async function displayMongodbInsertResult(records, arr, loops) {
     console.log(`Average ms for MongoDB INSERT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
 }
 
-async function runMongodbInsertTest(dataFile) {
-    await runOneMongodbInsertInstance(records10k, insertMongodb10kRows, dataFile)
-    await runOneMongodbInsertInstance(records100k, insertMongodb100kRows, dataFile)
-    await runOneMongodbInsertInstance(records200k, insertMongodb200kRows, dataFile)
-    await runOneMongodbInsertInstance(records500k, insertMongodb500kRows, dataFile)
-    await runOneMongodbInsertInstance(records1m, insertMongodb1mRows, dataFile)
-}
-
-async function runOneMongodbInsertInstance(records, arr, dataFile) {
+async function runMongodbInsertInstance(loops, records, dataFile) {
     if (records <= dataFile.length) {
-        let result
+    let arr = []
+    for (let i = 0; i < loops; i++) {
         await createMongodbCollection() // param collection name
-        result = await insertMongodbRecordsMs(records, dataFile)
-        arr.push(result)
+        let result = await insertMongodbRecordsMs(records, dataFile)
         await dropMongodbCollection()// param collection name
+        arr.push(result)
+    }
+    displayMongodbInsertResult(records10k, arr, loops)
     } else {
         console.log("Not enough rows in data file")
     }
@@ -116,16 +106,12 @@ export async function loopMongodbInsertTest() {
     const endTime = new Date();
     let elapsedTime = endTime - startTime
     console.log("Loading complete, time: ", elapsedTime)
-    let jsonArray = ObjToArray(data)
 
-    for (let i = 0; i < loops; i++) {
-        await runMongodbInsertTest(jsonArray);
-    }
-    await displayMongodbInsertResult(records10k, insertMongodb10kRows, loops)
-    await displayMongodbInsertResult(records100k, insertMongodb100kRows, loops)
-    await displayMongodbInsertResult(records200k, insertMongodb200kRows, loops)
-    await displayMongodbInsertResult(records500k, insertMongodb500kRows, loops)
-    await displayMongodbInsertResult(records1m, insertMongodb1mRows, loops)
+    await runMongodbInsertInstance(loops, records10k, data)
+    // await runMongodbInsertInstance(loops, records100k, jsonArray)
+    // await runMongodbInsertInstance(loops, records200k, jsonArray)
+    // await runMongodbInsertInstance(loops, records500k, jsonArray)
+    // await runMongodbInsertInstance(loops, records1m, jsonArray)
 
     const endTimeTotal = new Date();
     let elapsedTimeTotal = endTimeTotal - startTimeTotal

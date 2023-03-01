@@ -1,24 +1,16 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
 import { loopItterations ,displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
-import {closeMySqlConnection} from "./mysql-server.js";
-import {getInstance} from "./mysql-singleton.js";
 let loops = loopItterations
 const dbName = process.env.MYSQL_TABLE
-
-let getMySql10kRows = []
-let getMySql100kRows = []
-let getMySql200kRows = []
-let getMySql500kRows = []
-let getMySql1mRows = []
 
 async function getMySqlRecordsMs(limit, connection){
     return new Promise((resolve, reject)=>{
         let elapsedTime
+        const query = `SELECT * FROM ${dbName} LIMIT ${limit}`;
         const startTime = new Date();
 
-        const query = `SELECT * FROM ${dbName} LIMIT ${limit}`;
-        connection.query(query, async (error, results, fields) => {
+        connection.query(query, async (error, results) => {
             if (error) {
                 console.log(error);
                 reject(error)
@@ -34,7 +26,7 @@ async function getMySqlRecordsMs(limit, connection){
     });
 }
 
-async function displayMySqlResult(records, arr, loops){
+function displayMySqlResult(records, arr, loops){
     let sum = 0
     arr.forEach((e)=>{
         sum += e;
@@ -42,29 +34,27 @@ async function displayMySqlResult(records, arr, loops){
     console.log(`Average ms for MySQL SELECT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
 }
 
-
-async function runMySqlTest(){
-    await runOneMySqlInstance(records10k, getMySql10kRows)
-    await runOneMySqlInstance(records100k, getMySql100kRows)
-    await runOneMySqlInstance(records200k, getMySql200kRows)
-    await runOneMySqlInstance(records500k, getMySql500kRows)
-    await runOneMySqlInstance(records1m, getMySql1mRows)
-}
-
-async function runOneMySqlInstance(records, arr){
-    const connection = getInstance()
-    let result = await getMySqlRecordsMs(records, connection)
-    arr.push(result)
-    //await closeMySqlConnection(connection);
-}
-
-export async function loopMySqlGetTest(){
-    for (let i = 0; i < loops ; i++) {
-        await runMySqlTest();
+async function runMySqlGetTest(loops, records, connection) {
+    let arr = [];
+    for (let i = 0; i < loops; i++) {
+        let result = await getMySqlRecordsMs(records, connection)
+        arr.push(result)
     }
-    await displayMySqlResult(records10k, getMySql10kRows, loops)
-    await displayMySqlResult(records100k, getMySql100kRows, loops)
-    await displayMySqlResult(records200k, getMySql200kRows, loops)
-    await displayMySqlResult(records500k, getMySql500kRows, loops)
-    await displayMySqlResult(records1m, getMySql1mRows, loops)
+    displayMySqlResult(records, arr, loops)
+}
+
+export async function loopMySqlGetTest(connection){
+
+    console.log("Starting Get itteration")
+    const startTime = new Date();
+
+    await runMySqlGetTest(loops, records10k, connection)
+    // await runMySqlGetTest(loops, records100k, connection)
+    // await runMySqlGetTest(loops, records200k, connection)
+    // await runMySqlGetTest(loops, records500k, connection)
+    // await runMySqlGetTest(loops, records1m, connection)
+
+    const endTime = new Date();
+    let elapsedTime = endTime - startTime
+    console.log("Loading complete, time: ", elapsedTime)
 }

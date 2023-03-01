@@ -9,8 +9,6 @@ import {
     records500k,
 } from "../settings.js";
 import csv from "csvtojson"
-import {closeMySqlConnection} from "./mysql-server.js";
-import {getInstance} from './mysql-singleton.js'
 
 dotenv.config()
 
@@ -18,25 +16,24 @@ let loops = loopItterations
 const dbInsertTableName = process.env.MYSQL_INSERT_TABLE
 const filePath = process.env.FILE_PATH
 
-let insertMySql10kRows = []
-let insertMySql100kRows = []
-let insertMySql200kRows = []
-let insertMySql500kRows = []
-let insertMySql1mRows = []
-
 async function createMysqlTable(connection) {
     await dropMysqlTable(connection) // making sure the table is dropped
     const query = `CREATE TABLE IF NOT EXISTS ${dbInsertTableName}
                    (
-                       id         int,
-                       puzzle     text,
-                       solution   double,
-                       clues      int,
-                       difficulty double
-                   );` // can add "ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;" in the end of create table, should optimize the table
+                       id
+                       int,
+                       puzzle
+                       text,
+                       solution
+                       double,
+                       clues
+                       int,
+                       difficulty
+                       double
+                   );`
 
     return new Promise((resolve, reject) => {
-        connection.query(query, (error, results, fields) => {
+        connection.query(query, (error) => {
             if (error) {
                 reject()
                 throw error;
@@ -46,8 +43,8 @@ async function createMysqlTable(connection) {
                 }
                 resolve()
             }
-        }) // Query
-    }); // Promise
+        })
+    });
 }
 
 function dropMysqlTable(connection) {
@@ -63,46 +60,19 @@ function dropMysqlTable(connection) {
                 }
                 resolve()
             }
-        }) // Query
-    }); // Promise
+        })
+    });
 }
 
-
 export async function importCsvFile() {
-    // test different in ms speed between csvtojson and fast-csv
-
-    // return new Promise((resolve, reject) => {
     return csv({
         delimiter: ",",
         noheader: false,
     }).fromFile(filePath).subscribe((jsonObj) => {
         return jsonObj
-        //     if(jsonObj){
-        //     resolve(jsonObj)
-        //     } else {
-        //         reject(jsonObj)
-        //     }
     })
-    // }) // Promise
 
-    // let stream = fs.createReadStream(csvFilePath);
-    //
-    // let csvStream = await fastcsv.parse()
-    //     .on("data", function(data) {
-    //         // console.log(data)
-    //         csvData.push(data);
-    //
-    //     })
-    //     .on("end", function() {
-    //         // remove the first line: header
-    //         csvData.shift();
-    //
-    //         // connect to the MySQL database
-    //         // save csvData
-    //     });
-    // stream.pipe(csvStream);
 }
-
 
 export function ObjToArray(obj) {
     let arr = obj instanceof Array;
@@ -122,7 +92,7 @@ async function insertMySqlRecordsMs(limit, connection, dataFile) {
         new Promise((resolve, reject) => {
             const query = `INSERT INTO ${dbInsertTableName} (id, puzzle, solution, clues, difficulty)
                            VALUES (?)`;
-            connection.query(query, [dataFile[i]], (error, results, fields) => {
+            connection.query(query, [dataFile[i]], (error) => {
                 if (error) {
                     console.log("Error: ", error);
                     reject(error)
@@ -169,23 +139,23 @@ async function runMySqlInsertTest(loops, dataFile, records, connection) {
 }
 
 export async function loopMySqlInsertTest(connection) {
-    const startTimeTotal = new Date();
-    console.log("Preparing data file... ")
-    const startTime = new Date();
-    const data = await importCsvFile()
-    const endTime = new Date();
-    let elapsedTime = endTime - startTime
-    console.log("Loading complete, time: ", elapsedTime)
-    let jsonArray = ObjToArray(data)
+        const startTimeTotal = new Date();
+        console.log("Preparing data file... ")
+        const startTime = new Date();
+        const data = await importCsvFile()
+        const endTime = new Date();
+        let elapsedTime = endTime - startTime
+        console.log("Loading complete, time: ", elapsedTime)
+        let jsonArray = ObjToArray(data)
 
-    await runMySqlInsertTest(loops, jsonArray, records10k, connection)
-    await runMySqlInsertTest(loops, jsonArray, records100k, connection)
-    //await runMySqlInsertTest(loops, jsonArray, records200k)
-    //await runMySqlInsertTest(loops, jsonArray, records500k)
-    //await runMySqlInsertTest(loops, jsonArray, records1m)
+        await runMySqlInsertTest(loops, jsonArray, records10k, connection)
+        await runMySqlInsertTest(loops, jsonArray, records100k, connection)
+        //await runMySqlInsertTest(loops, jsonArray, records200k)
+        //await runMySqlInsertTest(loops, jsonArray, records500k)
+        //await runMySqlInsertTest(loops, jsonArray, records1m)
 
-    const endTimeTotal = new Date();
-    let elapsedTimeTotal = endTimeTotal - startTimeTotal
-    console.log("Total execution time: ", elapsedTimeTotal)
+        const endTimeTotal = new Date();
+        let elapsedTimeTotal = endTimeTotal - startTimeTotal
+        console.log("Total execution time: ", elapsedTimeTotal)
 
 }

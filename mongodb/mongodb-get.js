@@ -1,18 +1,13 @@
 import * as dotenv from 'dotenv'
+import { loopItterations, displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
+import { mongoClient } from "./mongodb-server.js";
+import {importCsvFile, ObjToArray} from "../mysql/mysql-insert.js";
 dotenv.config()
+
+let loops = loopItterations
 const dbName = process.env.MONGODB_DATABASE
 const collectionName = process.env.MONGODB_COLLECTION
 
-
-import { loopItterations, displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
-import { mongoClient } from "./mongodb-server.js";
-let loops = loopItterations
-
-let getMongoDb10kRows = []
-let getMongoDb100kRows = []
-let getMongoDb200kRows = []
-let getMongoDb500kRows = []
-let getMongoDb1mRows = []
 
 async function getMongoRecordsMs(limit){
     return new Promise(async (resolve, reject) => {
@@ -39,7 +34,7 @@ async function getMongoRecordsMs(limit){
     });
 }
 
-async function displayMongoResult(records, arr, loops){
+function displayMongoResult(records, arr, loops){
     let sum = 0
     arr.forEach((e)=>{
         sum += e;
@@ -47,28 +42,28 @@ async function displayMongoResult(records, arr, loops){
     console.log(`Average ms for MongoDB SELECT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
 }
 
-async function runOneMongoInstance(records, arr){
+async function runMongoInstance(loops, records){
+    let arr = []
+    for (let i = 0; i < loops; i++) {
     let result = await getMongoRecordsMs(records)
     arr.push(result)
-}
-
-async function runMongoTest(){
-    await runOneMongoInstance(records10k, getMongoDb10kRows)
-    await runOneMongoInstance(records100k, getMongoDb100kRows)
-    await runOneMongoInstance(records200k, getMongoDb200kRows)
-    await runOneMongoInstance(records500k, getMongoDb500kRows)
-    await runOneMongoInstance(records1m, getMongoDb1mRows)
+    }
+    displayMongoResult(records10k, arr, loops)
 }
 
 export async function loopMongoGetTest(){
-    for (let i = 0; i < loops; i++) {
-        await runMongoTest();
-    }
-    await displayMongoResult(records10k, getMongoDb10kRows, loops)
-    await displayMongoResult(records100k, getMongoDb100kRows, loops)
-    await displayMongoResult(records200k, getMongoDb200kRows, loops)
-    await displayMongoResult(records500k, getMongoDb500kRows, loops)
-    await displayMongoResult(records1m, getMongoDb1mRows, loops)
+    console.log("Starting MongoDB Get Test ")
+    const startTime = new Date();
+
+    await runMongoInstance(loops, records10k)
+    // await runMongoInstance(loops, records100k)
+    // await runMongoInstance(loops, records200k)
+    // await runMongoInstance(loops, records500k)
+    // await runMongoInstance(loops, records1m)
+
+    const endTime = new Date();
+    let elapsedTime = endTime - startTime
+    console.log("Total execution time: ", elapsedTime)
 }
 
 

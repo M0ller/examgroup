@@ -45,7 +45,7 @@ async function runMySqlGetTest(loops, records, connection) {
 
 export async function loopMySqlGetTest(connection){
 
-    console.log("Starting Get itteration")
+    console.log("Starting MySQL SELECT Test")
     const startTime = new Date();
 
     await runMySqlGetTest(loops, records10k, connection)

@@ -99,7 +99,7 @@ async function runMongodbInsertInstance(loops, records, dataFile) {
 
 export async function loopMongodbInsertTest() {
     const startTimeTotal = new Date();
-    console.log("Starting MongoDB Insert Test ")
+    console.log("Starting MongoDB Insert Test")
     console.log("Preparing data file... ")
     const startTime = new Date();
     const data = await importCsvFile()

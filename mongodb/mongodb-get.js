@@ -52,7 +52,7 @@ async function runMongoInstance(loops, records){
 }
 
 export async function loopMongoGetTest(){
-    console.log("Starting MongoDB Get Test ")
+    console.log("Starting MongoDB SELECT Test ")
     const startTime = new Date();
 
     await runMongoInstance(loops, records10k)

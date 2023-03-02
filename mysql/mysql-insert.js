@@ -140,7 +140,7 @@ async function runMySqlInsertTest(loops, dataFile, records, connection) {
 }
 
 export async function loopMySqlInsertTest(connection) {
-    console.log("Starting MySQL Insert Test ")
+    console.log("Starting MySQL INSERT Test ")
         const startTimeTotal = new Date();
         console.log("Preparing data file... ")
         const startTime = new Date();

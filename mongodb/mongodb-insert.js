@@ -91,7 +91,7 @@ async function runMongodbInsertInstance(loops, records, dataFile) {
         await dropMongodbCollection()// param collection name
         arr.push(result)
     }
-    displayMongodbInsertResult(records10k, arr, loops)
+    displayMongodbInsertResult(records, arr, loops)
     } else {
         console.log("Not enough rows in data file")
     }
@@ -108,10 +108,10 @@ export async function loopMongodbInsertTest() {
     console.log("Loading complete, time: ", elapsedTime)
 
     await runMongodbInsertInstance(loops, records10k, data)
-    await runMongodbInsertInstance(loops, records100k, data)
-    await runMongodbInsertInstance(loops, records200k, data)
-    await runMongodbInsertInstance(loops, records500k, data)
-    await runMongodbInsertInstance(loops, records1m, data)
+    // await runMongodbInsertInstance(loops, records100k, data)
+    // await runMongodbInsertInstance(loops, records200k, data)
+    // await runMongodbInsertInstance(loops, records500k, data)
+    // await runMongodbInsertInstance(loops, records1m, data)
 
     const endTimeTotal = new Date();
     let elapsedTimeTotal = endTimeTotal - startTimeTotal

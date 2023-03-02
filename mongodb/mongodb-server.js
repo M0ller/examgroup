@@ -4,10 +4,14 @@ import {displayLogs} from "../settings.js";
 const uri = "mongodb://127.0.0.1";
 
 let client;
+
 class MongoDBSingleton {
     constructor() {
-        if(!client){
+        if (!client) {
+            console.log("Created a new Instance!")
             client = new MongoClient(uri);
+        } else {
+            console.log("Instance already exists!")
         }
     }
 
@@ -15,9 +19,9 @@ class MongoDBSingleton {
         try {
             await client.connect()
             if (displayLogs) {
-            console.log("Connection established successfully")
+                console.log("Connection established successfully")
             }
-        }catch (e) {
+        } catch (e) {
             console.log(e)
         }
     }
@@ -28,12 +32,12 @@ class MongoDBSingleton {
             if (displayLogs) {
                 console.log('Disconnected from database.');
             }
-        }catch (e) {
+        } catch (e) {
             console.log(e)
         }
     }
 
-    getMongoClient(){
+    getMongoClient() {
         return client
     }
 

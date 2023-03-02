@@ -1,6 +1,6 @@
 [Back to README](README.md)
 
-Computer 1 <br>
+### Computer 1 <br>
 MySQL Select: <br>
 ![mysql-get-10-loops.png](results%2Fcomputer1%2Fmysql-get-10-loops.png)<br>
 MongoDB Select: <br>
@@ -10,7 +10,7 @@ MySQL Insert: <br>
 MongoDB Insert: <br>
 ![mongo-insert-10-loops.png](results%2Fcomputer1%2Fmongo-insert-10-loops.png)<br>
 
-Computer 2 <br>
+### Computer 2 <br>
 MySQL Select: <br>
 ![mysql-get.png](results%2Fcomputer2%2Fmysql-get.png)<br>
 MongoDB Select: <br>

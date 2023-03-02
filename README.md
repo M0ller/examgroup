@@ -1,6 +1,6 @@
 ### Exam project to test Performance in Mysql vs MongoDB
 
-Project for testing the performance on MySQL and MongoDB. <br>
+ExamProject for testing the query performance on MySQL and MongoDB in different pool sizes. <br>
 Tests that is done is SELECT and INSERT of 10k, 100k, 200k, 500k and 1 million records to see the different in ms. <br>
 
 
@@ -20,7 +20,7 @@ Select is done with Limit <br>
 Inserts is done with limit <br>
 
 
-Computer specs: <br>
+### Computer specs: <br>
 Computer 1: <br>
 Processor: 11th Gen Intel(R) Corde(TM) <br>
 i5-11300H @ 3.10 GHz 311 GHz <br>
@@ -40,7 +40,7 @@ Each execution performed a test iteration towards MySQL and MongoDB separately. 
 In each of these executions there was an operation type and then different size pools. Each test was performed in 10 itterations before moving on to the next test.  <br>
 Example of one execution: After the first test on SELECT of 10K records had been performed in 10 iterations it moved on to the next test pool size of SELECT on 100K records with 10 itterations and then continued so until the 1M records was completed. This execution was done first in MySQL and then towards MongoDB. Afterwards the results where collected it was compared towards each other. <br>
 
-Performance Results: <br>
+### Performance Results: <br>
 Following table displays how many times MySQL was faster in its query execution then MongoDB.<br>
 | Computer | Operation Type | 10K | 100K | 200K | 500K | 1M | Total Execution |
 |:--------:|:--------------:|:---:|:----:|:----:|:----:|:--:|:---------------:|

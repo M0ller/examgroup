@@ -69,7 +69,7 @@ async function insertMongodbRecordsMs(limit, dataFile) {
     const endTime = new Date()
     elapsedTime = endTime - startTime
     if (displayLogs) {
-        console.log(`MySQL Query: INSERT INTO ${dbInsertCollectionName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms`);
+        console.log(`MongoDB Query: INSERT INTO ${dbInsertCollectionName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms`);
     }
     return elapsedTime
 }

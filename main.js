@@ -3,6 +3,7 @@ import {loopMongodbInsertTest} from "./mongodb/mongodb-insert.js";
 import {loopMySqlGetTest} from "./mysql/mysql-get.js";
 import {loopMongoGetTest} from "./mongodb/mongodb-get.js";
 import {getInstance} from "./mysql/mysql-server.js";
+import {mongoClient} from "./mongodb/mongodb-server.js";
 
 // Singleton for MySQL
 // const connection = getInstance()

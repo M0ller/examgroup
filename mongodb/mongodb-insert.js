@@ -18,7 +18,7 @@ const dbName = process.env.MONGODB_DATABASE
 const filePath = process.env.FILE_PATH
 
 
-export async function createMongodbCollection() { // singleton
+export async function createMongodbCollection() {
     const client = mongoClient.getMongoClient()
     await client.connect()
     const db = await client.db(dbName)
@@ -108,7 +108,7 @@ function displayMongodbInsertResult(records, arr, loops) {
     })
     console.log(`Average ms for MongoDB INSERT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
     if (displayLogs) {
-        console.log(`MongoDB Query: INSERT INTO ${dbInsertCollectionName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms. Array: ${arr}`);
+        console.log(`MySQL Array of all estimated times: ${arr}`);
     }
 }
 

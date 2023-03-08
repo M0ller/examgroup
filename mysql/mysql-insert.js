@@ -17,20 +17,18 @@ const dbInsertTableName = process.env.MYSQL_INSERT_TABLE
 const filePath = process.env.FILE_PATH
 
 async function createMysqlTable(connection) {
-    await dropMysqlTable(connection) // making sure the table is dropped
+    // await dropMysqlTable(connection) // making sure the table is dropped
     const query = `CREATE TABLE IF NOT EXISTS ${dbInsertTableName}
-                   (
-                       id
-                       int,
-                       puzzle
-                       text,
-                       solution
-                       double,
-                       clues
-                       int,
-                       difficulty
-                       double
-                   );`
+                      (
+                          row_nr     int auto_increment
+                                     primary key,
+                          id         int    null,
+                          puzzle     text   null,
+                          solution   double null,
+                          clues      int    null,
+                          difficulty double null
+                      );`
+
 
     return new Promise((resolve, reject) => {
         connection.query(query, (error) => {
@@ -143,28 +141,24 @@ function displayMySqlInsertResult(records, arr, loops) {
         sum += e;
     })
     console.log(`Average ms for MySQL INSERT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
-}
-
-async function runOneMySqlInsertInstance(records, dataFile, connection) {
-    if (records <= dataFile.length) {
-        let result
-
-        await createMysqlTable(connection)
-        result = await insertMySqlRecordsMs(records, connection, dataFile)
-
-        return result
-    } else {
-        console.log("Not enough rows in data file")
+    if (displayLogs) {
+        console.log(`MySQL Array of all estimated times: ${arr}`);
     }
 }
 
 async function runMySqlInsertTest(loops, dataFile, records, connection) {
-    let arr = [];
-    for (let i = 0; i < loops; i++) {
-        let result = await runOneMySqlInsertInstance(records, dataFile, connection)
-        arr.push(result)
+    if (records <= dataFile.length) {
+        let arr = [];
+        for (let i = 0; i < loops; i++) {
+            await createMysqlTable(connection)
+            let result = await insertMySqlRecordsMs(records, connection, dataFile)
+            await dropMysqlTable(connection)
+            arr.push(result)
+        }
+        displayMySqlInsertResult(records, arr, loops)
+    } else {
+        console.log("Not enough rows in data file")
     }
-    displayMySqlInsertResult(records, arr, loops)
 }
 
 export async function loopMySqlInsertTest(connection) {

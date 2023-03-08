@@ -54,6 +54,33 @@ export async function dropMongodbCollection() { // singleton
     await client.close()
 }
 
+// // InsertOne
+// async function insertMongodbRecordsMs(limit, dataFile) {
+//     let elapsedTime
+//     let fileLimit = []
+//
+//     const client = mongoClient.getMongoClient()
+//     await client.connect()
+//     const db = await client.db(dbName)
+//     const startTime = new Date();
+//
+//     // [ {}, {}, ...]
+//     // [ [], [], ...]
+//     console.log(dataFile)
+//     for (let i = 0; i < limit; i++) {
+//         // fileLimit.push(dataFile[i])
+//         await db.collection(dbInsertCollectionName).insertOne(dataFile[i])
+//     }
+//     client.close()
+//     const endTime = new Date()
+//     elapsedTime = endTime - startTime
+//     if (displayLogs) {
+//         console.log(`MongoDB Query: INSERT INTO ${dbInsertCollectionName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms`);
+//     }
+//     return elapsedTime
+// }
+
+// InsertMany
 async function insertMongodbRecordsMs(limit, dataFile) {
     let elapsedTime
     let fileLimit = []
@@ -80,6 +107,9 @@ function displayMongodbInsertResult(records, arr, loops) {
         sum += e;
     })
     console.log(`Average ms for MongoDB INSERT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
+    if (displayLogs) {
+        console.log(`MongoDB Query: INSERT INTO ${dbInsertCollectionName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms. Array: ${arr}`);
+    }
 }
 
 async function runMongodbInsertInstance(loops, records, dataFile) {
@@ -106,6 +136,8 @@ export async function loopMongodbInsertTest() {
     const endTime = new Date();
     let elapsedTime = endTime - startTime
     console.log("Loading complete, time: ", elapsedTime)
+
+    // let jsonArray = ObjToArray(data)
 
     await runMongodbInsertInstance(loops, records10k, data)
     // await runMongodbInsertInstance(loops, records100k, data)

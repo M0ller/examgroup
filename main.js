@@ -6,7 +6,7 @@ import {getInstance} from "./mysql/mysql-server.js";
 import {mongoClient} from "./mongodb/mongodb-server.js";
 
 // Singleton for MySQL
-// const connection = getInstance()
+const connection = getInstance()
 console.log("**************************************************************")
 console.log("MySQL SELECT test:")
 // await loopMySqlGetTest(connection)
@@ -15,8 +15,8 @@ console.log("MongoDB SELECT test:")
 // await loopMongoGetTest()
 console.log("**************************************************************")
 console.log("MySQL INSERT test:")
-// await loopMySqlInsertTest(connection)
+await loopMySqlInsertTest(connection)
 console.log("**************************************************************")
 console.log("MongoDB INSERT test:")
-// await loopMongodbInsertTest()
+await loopMongodbInsertTest()
 console.log("**************************************************************")

@@ -40,7 +40,6 @@ class MongoDBSingleton {
     getMongoClient() {
         return client
     }
-
 }
 
 export const mongoClient = new MongoDBSingleton()

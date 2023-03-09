@@ -60,7 +60,7 @@ Speculating this is that in each iteration there is a create table/collection an
 <br>
 Using Concurrently to see how operation speed changes based on increase in multiple instances running simulating. <br>
 | Computer | Operation Type | Database | Instances | 10K | 100K | 200K | 500K | 1M | Total Execution |
-|:--------:|:--------------:|:---:|:----:|:----:|:----:|:--:|:---------------:|
+|:--------:|:--------------:|:---:|:----:|:----:|:----:|:--:|:---------------:|:--:|:--:|
 | Computer 1 | Select |  |  |  |  |  |  |  |
 | Computer 1 | Select |  |  |  |  |  |  |  |
 | Computer 1 | Insert |  |  |  |  |  |  |  |

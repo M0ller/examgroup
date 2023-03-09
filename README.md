@@ -56,18 +56,12 @@ MySQL performed its query operation faster than MongoDB in both SELECT and INSER
 Notable result from this is that the total execution time in the Insert tests shows that MySQL is slower.<br>
 Speculating this is that in each iteration there is a create table/collection and drop table/collection. It seems that this is much more performance demanding procedure for MySQL then MongoDB.
 
-
-<br>
 Using Concurrently to see how operation speed changes based on increase in multiple instances running simulating. <br>
 | Computer | Operation Type | Database | Instances | 10K | 100K | 200K | 500K | 1M | Total Execution |
 |:--------:|:--------------:|:--------:|:---------:|:---:|:----:|:----:|:----:|:--:|:---------------:|
-| Computer 1 | Select | noData | noData | noData | noData | noData | noData | noData | noData |
-| Computer 1 | Select | noData | noData | noData | noData | noData | noData | noData | noData |
-| Computer 1 | Insert | noData | noData | noData | noData | noData | noData | noData | noData |
 | Computer 2 | Select | MySQL | 100 | 479.96 | noData | noData | noData | noData | noData |
 | Computer 2 | Select | MongoDB | 100 | 378.56 | noData | noData | noData | noData | noData |
 | Computer 2 | Select | MongoDB | 1000 | 829.833 | noData | noData | noData | noData | noData |
-| Computer 2 | Insert | noData | noData | noData | noData | noData | noData | noData | noData |
-| Computer 2 | Insert | noData | noData | noData | noData | noData | noData | noData | noData |
+
 
 [Individual Execution Results](queryTests.md)

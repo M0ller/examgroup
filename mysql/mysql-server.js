@@ -1,5 +1,7 @@
 import * as dotenv from 'dotenv'
 import mysql from "mysql2";
+import {displayLogs} from "../settings.js";
+
 dotenv.config()
 
 let instance = null
@@ -17,9 +19,13 @@ function createInstance() {
 export function getInstance(){
     if (!instance) {
         instance = createInstance()
+        if (displayLogs) {
         console.log("created instance")
+        }
     }else{
-        console.log("Still alive")
+        if (displayLogs) {
+            console.log("Still alive")
+        }
     }
     return instance
 }

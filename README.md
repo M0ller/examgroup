@@ -2,7 +2,8 @@
 
 ExamProject for testing the query performance on MySQL and MongoDB in different pool sizes. <br>
 Tests that is done is SELECT and INSERT of 10k, 100k, 200k, 500k and 1 million records to see the different in ms. <br>
-
+Update:** <br>
+Added concurrently for testing. Command can be executed using "npm run start2" <br>
 
 Add your own .env file with the structure: <br>
 PASSWORD="your password" <br>
@@ -54,5 +55,19 @@ Following table displays how many times MySQL was faster in its query execution 
 MySQL performed its query operation faster than MongoDB in both SELECT and INSERT procedure. <br>
 Notable result from this is that the total execution time in the Insert tests shows that MySQL is slower.<br>
 Speculating this is that in each iteration there is a create table/collection and drop table/collection. It seems that this is much more performance demanding procedure for MySQL then MongoDB.
+
+
+<br>
+Using Concurrently to see how operation speed changes based on increase in multiple instances running simulating. <br>
+| Computer | Operation Type | Database | Instances | 10K | 100K | 200K | 500K | 1M | Total Execution |
+|:--------:|:--------------:|:---:|:----:|:----:|:----:|:--:|:---------------:|
+| Computer 1 | Select |  |  |  |  |  |  |  |
+| Computer 1 | Select |  |  |  |  |  |  |  |
+| Computer 1 | Insert |  |  |  |  |  |  |  |
+| Computer 2 | Select | MySQL | 100 | 479.96 |  |  |  |  |
+| Computer 2 | Select | MongoDB | 100 | 378.56 |  |  |  |  |
+| Computer 2 | Select | MongoDB | 1000 | 829.833 |  |  |  |  |
+| Computer 2 | Insert |  |  |  |  |  |  |  |
+| Computer 2 | Insert |  |  |  |  |  |  |  |
 
 [Individual Execution Results](queryTests.md)

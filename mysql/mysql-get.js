@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
 import { loopItterations ,displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
+import * as fs from "fs";
 let loops = loopItterations
 const dbName = process.env.MYSQL_TABLE
 
@@ -31,7 +32,12 @@ function displayMySqlResult(records, arr, loops){
     arr.forEach((e)=>{
         sum += e;
     })
-    console.log(`Average ms for MySQL SELECT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
+    let result =  sum / arr.length
+    console.log(`Average ms for MySQL SELECT on ${records} records ran ${loops} times n/${loops}: `, result, " ms.")
+    fs.appendFile('mysql_select_result.txt', result.toString() + "\n", (err)=>{
+        if (err) throw err;
+
+    })
 }
 
 async function runMySqlGetTest(loops, records, connection) {
@@ -45,16 +51,20 @@ async function runMySqlGetTest(loops, records, connection) {
 
 export async function loopMySqlGetTest(connection){
 
+    if (displayLogs) {
     console.log("Starting MySQL SELECT Test")
+    }
     const startTime = new Date();
 
     await runMySqlGetTest(loops, records10k, connection)
-    await runMySqlGetTest(loops, records100k, connection)
-    await runMySqlGetTest(loops, records200k, connection)
-    await runMySqlGetTest(loops, records500k, connection)
-    await runMySqlGetTest(loops, records1m, connection)
+    // await runMySqlGetTest(loops, records100k, connection)
+    // await runMySqlGetTest(loops, records200k, connection)
+    // await runMySqlGetTest(loops, records500k, connection)
+    // await runMySqlGetTest(loops, records1m, connection)
 
     const endTime = new Date();
     let elapsedTime = endTime - startTime
+    if (displayLogs) {
     console.log("Loading complete, time: ", elapsedTime)
+    }
 }

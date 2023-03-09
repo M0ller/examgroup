@@ -9,6 +9,7 @@ import {
     records500k,
 } from "../settings.js";
 import csv from "csvtojson"
+import fs from "fs";
 
 dotenv.config()
 
@@ -28,7 +29,6 @@ async function createMysqlTable(connection) {
                           clues      int    null,
                           difficulty double null
                       );`
-
 
     return new Promise((resolve, reject) => {
         connection.query(query, (error) => {
@@ -109,38 +109,16 @@ async function insertMySqlRecordsMs(limit, connection, dataFile) {
     return elapsedTime
 }
 
-
-// Old
-// async function insertMySqlRecordsMs(limit, connection, dataFile) {
-//     const startTime = new Date();
-//     let elapsedTime
-//     for (let i = 0; i < limit; i++) {
-//         new Promise((resolve, reject) => {
-//             const query = `INSERT INTO ${dbInsertTableName} (id, puzzle, solution, clues, difficulty)
-//                            VALUES (?)`;
-//             connection.query(query, [dataFile[i]], (error) => {
-//                 if (error) {
-//                     console.log("Error: ", error);
-//                     reject(error)
-//                 }
-//             }); // query
-//             resolve()
-//         }); // Promise
-//     }
-//     const endTime = new Date()
-//     elapsedTime = endTime - startTime
-//     if (displayLogs) {
-//         console.log(`MySQL Query: INSERT INTO ${dbInsertTableName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms`);
-//     }
-//     return elapsedTime
-// }
-
 function displayMySqlInsertResult(records, arr, loops) {
     let sum = 0
     arr.forEach((e) => {
         sum += e;
     })
-    console.log(`Average ms for MySQL INSERT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
+    let result =  sum / arr.length
+    console.log(`Average ms for MySQL INSERT on ${records} records ran ${loops} times n/${loops}: `, result, " ms.")
+    fs.appendFile('mysql_insert_result.txt', result.toString() + "\n", (err)=>{
+        if (err) throw err;
+    })
     if (displayLogs) {
         console.log(`MySQL Array of all estimated times: ${arr}`);
     }

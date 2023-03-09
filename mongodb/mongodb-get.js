@@ -1,7 +1,9 @@
 import * as dotenv from 'dotenv'
 import { loopItterations, displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
-import { mongoClient } from "./mongodb-server.js";
+import {uri} from "./mongodb-server.js";
 import {importCsvFile, ObjToArray} from "../mysql/mysql-insert.js";
+import {MongoClient} from "mongodb";
+import fs from "fs";
 dotenv.config()
 
 let loops = loopItterations
@@ -13,7 +15,7 @@ async function getMongoRecordsMs(limit){
     return new Promise(async (resolve, reject) => {
         let elapsedTime
         let result
-        const client = mongoClient.getMongoClient()
+        const client = new MongoClient(uri)
         await client.connect()
         const db = await client.db(dbName)
         const collection = db.collection(collectionName);
@@ -39,7 +41,12 @@ function displayMongoResult(records, arr, loops){
     arr.forEach((e)=>{
         sum += e;
     })
-    console.log(`Average ms for MongoDB SELECT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
+    let result =  sum / arr.length
+    console.log(`Average ms for MongoDB SELECT on ${records} records ran ${loops} times n/${loops}: `, result, " ms.")
+    fs.appendFile('mongodb_select_result.txt', result.toString() + "\n", (err)=>{
+        if (err) throw err;
+
+    })
 }
 
 async function runMongoInstance(loops, records){
@@ -52,18 +59,22 @@ async function runMongoInstance(loops, records){
 }
 
 export async function loopMongoGetTest(){
-    console.log("Starting MongoDB SELECT Test ")
+    if (displayLogs) {
+    console.log("Starting MongoDB SELECT Test")
+    }
     const startTime = new Date();
 
     await runMongoInstance(loops, records10k)
-    await runMongoInstance(loops, records100k)
-    await runMongoInstance(loops, records200k)
-    await runMongoInstance(loops, records500k)
-    await runMongoInstance(loops, records1m)
+    // await runMongoInstance(loops, records100k)
+    // await runMongoInstance(loops, records200k)
+    // await runMongoInstance(loops, records500k)
+    // await runMongoInstance(loops, records1m)
 
     const endTime = new Date();
     let elapsedTime = endTime - startTime
+    if (displayLogs) {
     console.log("Total execution time: ", elapsedTime)
+    }
 }
 
 

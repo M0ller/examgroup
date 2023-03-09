@@ -8,8 +8,10 @@ import {
     records200k,
     records500k,
 } from "../settings.js";
-import {importCsvFile, ObjToArray} from "../mysql/mysql-insert.js";
-import {mongoClient} from "./mongodb-server.js";
+import {importCsvFile} from "../mysql/mysql-insert.js";
+import {MongoClient} from "mongodb";
+import {uri} from "./mongodb-server.js";
+import fs from "fs";
 dotenv.config()
 
 let loops = loopItterations
@@ -19,7 +21,8 @@ const filePath = process.env.FILE_PATH
 
 
 export async function createMongodbCollection() {
-    const client = mongoClient.getMongoClient()
+    // const client = mongoClient.getMongoClient()
+    const client = new MongoClient(uri)
     await client.connect()
     const db = await client.db(dbName)
     await db.createCollection(dbInsertCollectionName, function (err) {
@@ -37,7 +40,8 @@ export async function createMongodbCollection() {
 }
 
 export async function dropMongodbCollection() { // singleton
-    const client = mongoClient.getMongoClient()
+    // const client = mongoClient.getMongoClient()
+    const client = new MongoClient(uri)
     await client.connect()
     const db = await client.db(dbName)
     await db.dropCollection(dbInsertCollectionName, function (err) {
@@ -54,32 +58,6 @@ export async function dropMongodbCollection() { // singleton
     await client.close()
 }
 
-// // InsertOne
-// async function insertMongodbRecordsMs(limit, dataFile) {
-//     let elapsedTime
-//     let fileLimit = []
-//
-//     const client = mongoClient.getMongoClient()
-//     await client.connect()
-//     const db = await client.db(dbName)
-//     const startTime = new Date();
-//
-//     // [ {}, {}, ...]
-//     // [ [], [], ...]
-//     console.log(dataFile)
-//     for (let i = 0; i < limit; i++) {
-//         // fileLimit.push(dataFile[i])
-//         await db.collection(dbInsertCollectionName).insertOne(dataFile[i])
-//     }
-//     client.close()
-//     const endTime = new Date()
-//     elapsedTime = endTime - startTime
-//     if (displayLogs) {
-//         console.log(`MongoDB Query: INSERT INTO ${dbInsertCollectionName}. From file "${filePath}". Inserted ${limit} rows in ${elapsedTime} ms`);
-//     }
-//     return elapsedTime
-// }
-
 // InsertMany
 async function insertMongodbRecordsMs(limit, dataFile) {
     let elapsedTime
@@ -87,12 +65,12 @@ async function insertMongodbRecordsMs(limit, dataFile) {
     for (let i = 0; i < limit; i++) {
         fileLimit.push(dataFile[i])
     }
-    const client = mongoClient.getMongoClient()
+    const client = new MongoClient(uri)
     await client.connect()
     const db = await client.db(dbName)
     const startTime = new Date();
     await db.collection(dbInsertCollectionName).insertMany(fileLimit)
-    client.close()
+    await client.close()
     const endTime = new Date()
     elapsedTime = endTime - startTime
     if (displayLogs) {
@@ -106,7 +84,11 @@ function displayMongodbInsertResult(records, arr, loops) {
     arr.forEach((e) => {
         sum += e;
     })
-    console.log(`Average ms for MongoDB INSERT on ${records} records ran ${loops} times n/${loops}: `, sum / arr.length, " ms.")
+    let result =  sum / arr.length
+    console.log(`Average ms for MongoDB INSERT on ${records} records ran ${loops} times n/${loops}: `, result, " ms.")
+    fs.appendFile('mongodb_insert_result.txt', result.toString() + "\n", (err)=>{
+        if (err) throw err;
+    })
     if (displayLogs) {
         console.log(`MySQL Array of all estimated times: ${arr}`);
     }
@@ -129,15 +111,17 @@ async function runMongodbInsertInstance(loops, records, dataFile) {
 
 export async function loopMongodbInsertTest() {
     const startTimeTotal = new Date();
+    if (displayLogs) {
     console.log("Starting MongoDB Insert Test")
     console.log("Preparing data file... ")
+    }
     const startTime = new Date();
     const data = await importCsvFile()
     const endTime = new Date();
     let elapsedTime = endTime - startTime
+    if (displayLogs) {
     console.log("Loading complete, time: ", elapsedTime)
-
-    // let jsonArray = ObjToArray(data)
+    }
 
     await runMongodbInsertInstance(loops, records10k, data)
     // await runMongodbInsertInstance(loops, records100k, data)
@@ -147,5 +131,7 @@ export async function loopMongodbInsertTest() {
 
     const endTimeTotal = new Date();
     let elapsedTimeTotal = endTimeTotal - startTimeTotal
+    if (displayLogs) {
     console.log("Total execution time: ", elapsedTimeTotal)
+    }
 }

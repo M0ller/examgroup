@@ -34,3 +34,14 @@ async function importCsvFile() {
     //     });
     // stream.pipe(csvStream);
 }
+
+export function ObjToArray(obj) {
+    let arr = obj instanceof Array;
+    return (arr ? obj : Object.keys(obj)).map(function (i) {
+        let val = arr ? i : obj[i];
+        if (typeof val === 'object')
+            return ObjToArray(val);
+        else
+            return val;
+    });
+}

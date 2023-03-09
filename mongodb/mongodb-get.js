@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv'
 import { loopItterations, displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
 import {uri} from "./mongodb-server.js";
-import {importCsvFile, ObjToArray} from "../mysql/mysql-insert.js";
+import {importCsvFile} from "../mysql/mysql-insert.js";
 import {MongoClient} from "mongodb";
 import fs from "fs";
 dotenv.config()

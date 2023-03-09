@@ -1,6 +1,6 @@
 import concurrently from "concurrently";
 
-const repeatN = 1000
+const repeatN = 100
 
 const commands = []
 

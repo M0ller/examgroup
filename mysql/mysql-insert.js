@@ -72,16 +72,7 @@ export async function importCsvFile() {
 
 }
 
-export function ObjToArray(obj) {
-    let arr = obj instanceof Array;
-    return (arr ? obj : Object.keys(obj)).map(function (i) {
-        let val = arr ? i : obj[i];
-        if (typeof val === 'object')
-            return ObjToArray(val);
-        else
-            return val;
-    });
-}
+
 
 // Insert without converting csv file using ObjToArray
 async function insertMySqlRecordsMs(limit, connection, dataFile) {

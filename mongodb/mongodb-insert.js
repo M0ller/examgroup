@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv'
 import {
-    displayLogs,
+    displayLogs, dropTables,
     loopItterations,
     records100k,
     records10k,
@@ -100,7 +100,9 @@ async function runMongodbInsertInstance(loops, records, dataFile) {
     for (let i = 0; i < loops; i++) {
         await createMongodbCollection() // param collection name
         let result = await insertMongodbRecordsMs(records, dataFile)
+        if(dropTables){
         await dropMongodbCollection()// param collection name
+        }
         arr.push(result)
     }
     displayMongodbInsertResult(records, arr, loops)

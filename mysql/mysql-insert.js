@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv'
 import {
-    displayLogs,
+    displayLogs, dropTables,
     loopItterations,
     records100k,
     records10k,
@@ -69,27 +69,27 @@ export async function importCsvFile() {
     }).fromFile(filePath).subscribe((jsonObj) => {
         return jsonObj
     })
-
 }
-
-
 
 // Insert without converting csv file using ObjToArray
 async function insertMySqlRecordsMs(limit, connection, dataFile) {
     const startTime = new Date();
     let elapsedTime
-
     for (let i = 0; i < limit; i++) {
         new Promise((resolve, reject) => {
-            const query = `INSERT INTO ${dbInsertTableName} (id, puzzle, solution, clues, difficulty)
+            try {
+                const query = `INSERT INTO ${dbInsertTableName} (id, puzzle, solution, clues, difficulty)
                            VALUES (?,?,?,?,?)`;
-            connection.query(query, [dataFile[i].id, dataFile[i].puzzle ,dataFile[i].solution ,dataFile[i].clues,dataFile[i].difficulty ], (error) => {
-                if (error) {
-                    console.log("Error: ", error);
-                    reject(error)
-                }
-            }); // query
-            resolve()
+                connection.query(query, [dataFile[i].id, dataFile[i].puzzle ,dataFile[i].solution ,dataFile[i].clues,dataFile[i].difficulty], (error) => {
+                    if (error) {
+                        console.log("Error: ", error);
+                        reject(error)
+                    }
+                }); // query
+                resolve()
+            }catch (e){
+                reject()
+            }
         }); // Promise
     }
     const endTime = new Date()
@@ -121,7 +121,9 @@ async function runMySqlInsertTest(loops, dataFile, records, connection) {
         for (let i = 0; i < loops; i++) {
             await createMysqlTable(connection)
             let result = await insertMySqlRecordsMs(records, connection, dataFile)
+            if(dropTables){
             await dropMysqlTable(connection)
+            }
             arr.push(result)
         }
         displayMySqlInsertResult(records, arr, loops)
@@ -150,5 +152,4 @@ export async function loopMySqlInsertTest(connection) {
         const endTimeTotal = new Date();
         let elapsedTimeTotal = endTimeTotal - startTimeTotal
         console.log("Total execution time: ", elapsedTimeTotal)
-
 }

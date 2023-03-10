@@ -7,12 +7,13 @@ import {
     records10k,
     records1m,
     records200k,
-    records500k, run10K,
+    records500k, recordsCustom, run100K, run10K, run1m, run200K, run500K, runCustom,
 } from "../settings.js";
 import {importCsvFile} from "../mysql/mysql-insert.js";
 import {MongoClient} from "mongodb";
 import {uri} from "./mongodb-server.js";
 import fs from "fs";
+import {config} from "dotenv";
 dotenv.config()
 
 let loops = loopItterations
@@ -66,11 +67,12 @@ async function insertMongodbRecordsMs(limit, dataFile) {
     for (let i = 0; i < limit; i++) {
         fileLimit.push(dataFile[i])
     }
-    const client = new MongoClient(uri)
+    const connectionOptions = { maxPoolSize: 1 }
+    const client = new MongoClient(uri, connectionOptions)
     await client.connect()
     const db = await client.db(dbName)
     const startTime = new Date();
-    await db.collection(dbInsertCollectionName).insertMany(fileLimit)
+    await db.collection(dbInsertCollectionName).insertMany(fileLimit, {writeConcern: {w:0}, ordered: false})
     await client.close()
     const endTime = new Date()
     elapsedTime = endTime - startTime
@@ -128,11 +130,12 @@ export async function loopMongodbInsertTest() {
     console.log("Loading complete, time: ", elapsedTime)
     }
 
-    if (run10K) await runMongodbInsertInstance(loops, records10k, data)
-    // await runMongodbInsertInstance(loops, records100k, data)
-    // await runMongodbInsertInstance(loops, records200k, data)
-    // await runMongodbInsertInstance(loops, records500k, data)
-    // await runMongodbInsertInstance(loops, records1m, data)
+    if (runCustom) await runMongodbInsertInstance(loops, recordsCustom, data);
+    if (run10K) await runMongodbInsertInstance(loops, records10k, data);
+    if (run100K) await runMongodbInsertInstance(loops, records100k, data);
+    if (run200K) await runMongodbInsertInstance(loops, records200k, data);
+    if (run500K) await runMongodbInsertInstance(loops, records500k, data);
+    if (run1m) await runMongodbInsertInstance(loops, records1m, data);
 
     const endTimeTotal = new Date();
     let elapsedTimeTotal = endTimeTotal - startTimeTotal

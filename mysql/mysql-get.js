@@ -1,6 +1,15 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
-import { loopItterations ,displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
+import {
+    loopItterations,
+    displayLogs,
+    records10k,
+    records100k,
+    records200k,
+    records500k,
+    records1m,
+    run10K, run100K, run500K, run200K, run1m
+} from "../settings.js";
 import * as fs from "fs";
 let loops = loopItterations
 const dbName = process.env.MYSQL_TABLE
@@ -55,11 +64,11 @@ export async function loopMySqlGetTest(connection){
     }
     const startTime = new Date();
 
-    await runMySqlGetTest(loops, records10k, connection)
-    // await runMySqlGetTest(loops, records100k, connection)
-    // await runMySqlGetTest(loops, records200k, connection)
-    // await runMySqlGetTest(loops, records500k, connection)
-    // await runMySqlGetTest(loops, records1m, connection)
+    if(run10K) await runMySqlGetTest(loops, records10k, connection);
+    if(run100K) await runMySqlGetTest(loops, records100k, connection);
+    if(run200K) await runMySqlGetTest(loops, records200k, connection);
+    if(run500K) await runMySqlGetTest(loops, records500k, connection);
+    if(run1m) await runMySqlGetTest(loops, records1m, connection);
 
     const endTime = new Date();
     let elapsedTime = endTime - startTime

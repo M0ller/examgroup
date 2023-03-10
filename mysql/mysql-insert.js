@@ -6,7 +6,7 @@ import {
     records10k,
     records1m,
     records200k,
-    records500k, run10K,
+    records500k, recordsCustom, run100K, run10K, run1m, run200K, run500K, runCustom,
 } from "../settings.js";
 import csv from "csvtojson"
 import fs from "fs";
@@ -135,7 +135,7 @@ async function runMySqlInsertTest(loops, dataFile, records, connection) {
 export async function loopMySqlInsertTest(connection) {
     console.log("Starting MySQL INSERT Test ")
         const startTimeTotal = new Date();
-        console.log("Preparing data file... ")
+        console.log("Preparing data file...")
         const startTime = new Date();
         const data = await importCsvFile()
         const endTime = new Date();
@@ -143,12 +143,12 @@ export async function loopMySqlInsertTest(connection) {
         console.log("Loading complete, time: ", elapsedTime)
         // let jsonArray = ObjToArray(data)
 
+        if(runCustom) await runMySqlInsertTest(loops, data, recordsCustom, connection);
         if(run10K) await runMySqlInsertTest(loops, data, records10k, connection);
-
-        // await runMySqlInsertTest(loops, jsonArray, records100k, connection)
-        // await runMySqlInsertTest(loops, jsonArray, records200k, connection)
-        // await runMySqlInsertTest(loops, jsonArray, records500k, connection)
-        // await runMySqlInsertTest(loops, jsonArray, records1m, connection)
+        if(run100K) await runMySqlInsertTest(loops, data, records100k, connection);
+        if(run200K) await runMySqlInsertTest(loops, data, records200k, connection);
+        if(run500K) await runMySqlInsertTest(loops, data, records500k, connection);
+        if(run1m) await runMySqlInsertTest(loops, data, records1m, connection);
 
         const endTimeTotal = new Date();
         let elapsedTimeTotal = endTimeTotal - startTimeTotal

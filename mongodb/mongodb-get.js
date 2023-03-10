@@ -1,5 +1,14 @@
 import * as dotenv from 'dotenv'
-import { loopItterations, displayLogs, records10k, records100k, records200k, records500k, records1m } from "../settings.js";
+import {
+    loopItterations,
+    displayLogs,
+    records10k,
+    records100k,
+    records200k,
+    records500k,
+    records1m,
+    run10K, run100K, run200K, run500K, run1m
+} from "../settings.js";
 import {uri} from "./mongodb-server.js";
 import {importCsvFile} from "../mysql/mysql-insert.js";
 import {MongoClient} from "mongodb";
@@ -63,11 +72,11 @@ export async function loopMongoGetTest(){
     }
     const startTime = new Date();
 
-    await runMongoInstance(loops, records10k)
-    // await runMongoInstance(loops, records100k)
-    // await runMongoInstance(loops, records200k)
-    // await runMongoInstance(loops, records500k)
-    // await runMongoInstance(loops, records1m)
+    if (run10K) await runMongoInstance(loops, records10k);
+    if (run100K) await runMongoInstance(loops, records100k);
+    if (run200K) await runMongoInstance(loops, records200k);
+    if (run500K) await runMongoInstance(loops, records500k);
+    if (run1m) await runMongoInstance(loops, records1m);
 
     const endTime = new Date();
     let elapsedTime = endTime - startTime

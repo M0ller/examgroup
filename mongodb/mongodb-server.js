@@ -2,7 +2,7 @@ import {MongoClient} from "mongodb";
 import {displayLogs} from "../settings.js";
 
 export const uri = "mongodb://127.0.0.1";
-//
+
 // let client;
 //
 // class MongoDBSingleton {

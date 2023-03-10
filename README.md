@@ -64,4 +64,9 @@ Using Concurrently to see how operation speed changes based on increase in multi
 | Computer 2 | Select | MongoDB | 1000 | 829.833 | noData | noData | noData | noData | noData |
 
 
+In MySQL Workbench, Change the connection pool to: <br>
+use in MySQL workbench: "set global max_connections = 1500;"
+To see if the variable is updated use "SHOW VARIABLES LIKE 'max_connections';"
+Original connection limit is 151.
+
 [Individual Execution Results](queryTests.md)

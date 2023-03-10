@@ -8,3 +8,5 @@ export const records500k = 500000
 export const records1m = 1000000
 export const displayLogs = false
 export const dropTables = false
+
+export const scriptReapetN = 1000

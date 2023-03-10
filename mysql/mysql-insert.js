@@ -6,7 +6,7 @@ import {
     records10k,
     records1m,
     records200k,
-    records500k,
+    records500k, run10K,
 } from "../settings.js";
 import csv from "csvtojson"
 import fs from "fs";
@@ -143,7 +143,8 @@ export async function loopMySqlInsertTest(connection) {
         console.log("Loading complete, time: ", elapsedTime)
         // let jsonArray = ObjToArray(data)
 
-        await runMySqlInsertTest(loops, data, records10k, connection)
+        if(run10K) await runMySqlInsertTest(loops, data, records10k, connection);
+
         // await runMySqlInsertTest(loops, jsonArray, records100k, connection)
         // await runMySqlInsertTest(loops, jsonArray, records200k, connection)
         // await runMySqlInsertTest(loops, jsonArray, records500k, connection)

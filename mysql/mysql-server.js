@@ -7,7 +7,7 @@ dotenv.config()
 let instance = null
 function createInstance() {
     instance = mysql.createPool({
-        connectionLimit: 1,
+        connectionLimit: 10,
         host: process.env.HOST,
         user: process.env.USER,
         password: process.env.PASSWORD,

@@ -45,7 +45,6 @@ function displayMongoResult(records, arr, loops){
     console.log(`Average ms for MongoDB SELECT on ${records} records ran ${loops} times n/${loops}: `, result, " ms.")
     fs.appendFile('mongodb_select_result.txt', result.toString() + "\n", (err)=>{
         if (err) throw err;
-
     })
 }
 

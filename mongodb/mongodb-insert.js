@@ -1,12 +1,13 @@
 import * as dotenv from 'dotenv'
 import {
+    createMongoDbCollection,
     displayLogs, dropTables,
     loopItterations,
     records100k,
     records10k,
     records1m,
     records200k,
-    records500k,
+    records500k, run10K,
 } from "../settings.js";
 import {importCsvFile} from "../mysql/mysql-insert.js";
 import {MongoClient} from "mongodb";
@@ -98,7 +99,9 @@ async function runMongodbInsertInstance(loops, records, dataFile) {
     if (records <= dataFile.length) {
     let arr = []
     for (let i = 0; i < loops; i++) {
+        if(createMongoDbCollection){
         await createMongodbCollection() // param collection name
+        }
         let result = await insertMongodbRecordsMs(records, dataFile)
         if(dropTables){
         await dropMongodbCollection()// param collection name
@@ -125,7 +128,7 @@ export async function loopMongodbInsertTest() {
     console.log("Loading complete, time: ", elapsedTime)
     }
 
-    await runMongodbInsertInstance(loops, records10k, data)
+    if (run10K) await runMongodbInsertInstance(loops, records10k, data)
     // await runMongodbInsertInstance(loops, records100k, data)
     // await runMongodbInsertInstance(loops, records200k, data)
     // await runMongodbInsertInstance(loops, records500k, data)

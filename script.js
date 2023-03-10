@@ -1,9 +1,9 @@
 import concurrently from "concurrently";
-import {scriptReapetN} from "./settings.js";
+import {scriptRepeatN} from "./settings.js";
 
 const commands = []
 
-for (let i = 0; i <scriptReapetN; i++) {
+for (let i = 0; i <scriptRepeatN; i++) {
     commands.push({
         command: "npm run start"
     })
